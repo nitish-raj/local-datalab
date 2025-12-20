@@ -9,7 +9,7 @@ K8_TF_DIR="${REPO_DIR}/infra/terraform/k8"
 AWS_TF_DIR="${REPO_DIR}/infra/terraform/aws"
 
 echo "[bootstrap] Starting minikube"
-minikube start --profile "${CLUSTER_PROFILE}" --driver=docker --cpus=2 --memory=8192 --disk-size=32g
+minikube start --profile "${CLUSTER_PROFILE}"
 minikube -p "${CLUSTER_PROFILE}" addons enable metrics-server
 
 echo "[bootstrap] Setting kubectl context"
