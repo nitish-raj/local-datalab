@@ -1,24 +1,40 @@
+variable "kube_context" {
+  type    = string
+}
+
+variable "data_lab_namespace" {
+  type    = string
+}
+
+variable "airflow_namespace" {
+  type    = string
+}
+
+variable "aws_region" {
+  type    = string
+}
+
 provider "kubernetes" {
   config_path    = pathexpand("~/.kube/config")
-  config_context = "local-datalab"
+  config_context = var.kube_context
 }
 
 provider "helm" {
   kubernetes = {
     config_path    = pathexpand("~/.kube/config")
-    config_context = "local-datalab"
+    config_context = var.kube_context
   }
 }
 
 resource "kubernetes_namespace_v1" "data_lab" {
   metadata {
-    name = "data-lab"
+    name = var.data_lab_namespace
   }
 }
 
 resource "kubernetes_namespace_v1" "airflow" {
   metadata {
-    name = "airflow"
+    name = var.airflow_namespace
   }
 }
 
@@ -71,7 +87,7 @@ resource "kubernetes_deployment_v1" "localstack" {
 
           env {
             name  = "AWS_DEFAULT_REGION"
-            value = "eu-central-1"
+            value = var.aws_region
           }
 
           port {
@@ -155,4 +171,10 @@ resource "helm_release" "airflow" {
   depends_on = [
     kubernetes_service_v1.localstack
   ]
+}
+
+resource "kubernetes_manifest" "airflow_dags_sync_cronjob" {
+  manifest = yamldecode(
+    file("${path.module}/../../terraform/k8/airflow-dags-sync.yaml")
+  )
 }

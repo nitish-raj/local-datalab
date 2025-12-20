@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
 CLUSTER_PROFILE="local-datalab"
-K8_TF_DIR="/workspaces/$(basename "$(pwd)")/infra/terraform/k8"
-AWS_TF_DIR="/workspaces/$(basename "$(pwd)")/infra/terraform/aws"
+K8_TF_DIR="${REPO_DIR}/infra/terraform/k8"
+AWS_TF_DIR="${REPO_DIR}/infra/terraform/aws"
 
 echo "[bootstrap] Starting minikube"
 minikube start --profile "${CLUSTER_PROFILE}" --driver=docker --cpus=4 --memory=8192 --disk-size=40g
@@ -60,16 +63,20 @@ else
   echo "[bootstrap] WARNING: kubectl not found on PATH; skipping wiring"
 fi
 
+echo "[bootstrap] Ensuring cron DAG sync job is installed"
+SYNC_SCRIPT="${REPO_DIR}/.devcontainer/sync-dags.sh"
+CRON_LINE="*/1 * * * * /bin/bash ${SYNC_SCRIPT} >> /tmp/sync-dags.log 2>&1"
 
-echo "[bootstrap] Ensuring cron is installed and sync-dags job is registered"
-
-sudo apt-get update -y
-sudo apt-get install -y cron
-
-CRON_LINE="*/2 * * * * /bin/bash /workspaces/$(basename "$(pwd)")/.devcontainer/sync-dags.sh >> /var/log/sync-dags.log 2>&1"
-
-# Install crontab line if not present
-( crontab -l 2>/dev/null | grep -v 'sync-dags.sh' ; echo "${CRON_LINE}" ) | crontab -
+if [ -f "${SYNC_SCRIPT}" ]; then
+  if command -v crontab >/dev/null 2>&1; then
+    ( crontab -l 2>/dev/null | grep -v 'sync-dags.sh' || true; echo "${CRON_LINE}" ) | crontab -
+    echo "[bootstrap] Installed/updated cron entry for sync-dags.sh"
+  else
+    echo "[bootstrap] WARNING: crontab binary not found; skipping cron job install"
+  fi
+else
+  echo "[bootstrap] WARNING: ${SYNC_SCRIPT} not found; cron job not installed"
+fi
 
 sudo service cron restart
 

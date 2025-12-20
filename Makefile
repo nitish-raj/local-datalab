@@ -20,3 +20,6 @@ port-forward:
 sync-dags:
 	aws --endpoint-url=http://127.0.0.1:4566 s3 sync \
 		./airflow s3://airflow-dags/dags --delete
+
+list-dags:
+	aws --endpoint-url=http://127.0.0.1:4566 s3 ls s3://airflow-dags --recursive
