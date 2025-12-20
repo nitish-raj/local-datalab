@@ -11,6 +11,8 @@ env:
 executor: KubernetesExecutor
 
 airflow:
+  migrationsWaitTimeout: 600
+  AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 30
   connections:
     - id: aws_default
       type: aws
@@ -30,10 +32,13 @@ postgresql:
 
 
 webserver:
+  enabled: true
   defaultUser:
     enabled: true
     username: admin
     password: admin
+  service:
+    type: ClusterIP
   resources:
     requests:
       cpu: "100m"
@@ -73,3 +78,11 @@ dags:
   persistence:
     enabled: true
     size: 512Mi
+
+createUserJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false

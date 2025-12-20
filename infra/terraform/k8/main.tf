@@ -1,4 +1,14 @@
-# Kubernetes Resources (created first)
+provider "kubernetes" {
+  config_path    = pathexpand("~/.kube/config")
+  config_context = "local-datalab"
+}
+
+provider "helm" {
+  kubernetes = {
+    config_path    = pathexpand("~/.kube/config")
+    config_context = "local-datalab"
+  }
+}
 
 resource "kubernetes_namespace_v1" "data_lab" {
   metadata {
@@ -38,6 +48,13 @@ resource "kubernetes_deployment_v1" "localstack" {
       }
 
       spec {
+        volume {
+          name = "localstack-data"
+          persistent_volume_claim {
+            claim_name = kubernetes_persistent_volume_claim_v1.localstack.metadata[0].name
+          }
+        }
+        
         container {
           name  = "localstack"
           image = "localstack/localstack:latest"
@@ -54,7 +71,7 @@ resource "kubernetes_deployment_v1" "localstack" {
 
           env {
             name  = "AWS_DEFAULT_REGION"
-            value = var.aws_region
+            value = "eu-central-1"
           }
 
           port {
@@ -71,7 +88,27 @@ resource "kubernetes_deployment_v1" "localstack" {
               memory = "512Mi"
             }
           }
+          
+          volume_mount {
+            name = "localstack-data"
+            mount_path = "/var/lib/localstack"
+          }
         }
+      }
+    }
+  }
+}
+
+resource "kubernetes_persistent_volume_claim_v1" "localstack" {
+  metadata {
+    name      = "localstack-pvc"
+    namespace = kubernetes_namespace_v1.data_lab.metadata[0].name
+  }
+  spec {
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "2Gi"
       }
     }
   }
@@ -108,46 +145,14 @@ resource "helm_release" "airflow" {
   namespace  = kubernetes_namespace_v1.airflow.metadata[0].name
   version    = "1.17.0"
   cleanup_on_fail = true
-  timeout    = 3600
+  timeout    = 1800
   max_history = 1
 
   values = [
-    file("${path.module}/../airflow-values.yaml")
+    file("${path.module}/../../airflow-values.yaml")
   ]
 
   depends_on = [
     kubernetes_service_v1.localstack
-  ]
-}
-
-# AWS Resources (depends on K8 resources)
-
-# Wait for localstack to be ready
-resource "time_sleep" "wait_for_localstack" {
-  depends_on = [kubernetes_service_v1.localstack]
-  create_duration = "30s"
-}
-
-resource "aws_s3_bucket" "raw_satellite" {
-  bucket = "raw-satellite-data"
-
-  depends_on = [
-    time_sleep.wait_for_localstack
-  ]
-}
-
-resource "aws_s3_bucket" "processed_aoi" {
-  bucket = "processed-aoi-data"
-
-  depends_on = [
-    time_sleep.wait_for_localstack
-  ]
-}
-
-resource "aws_s3_bucket" "field_timeseries" {
-  bucket = "field-timeseries-data"
-
-  depends_on = [
-    time_sleep.wait_for_localstack
   ]
 }

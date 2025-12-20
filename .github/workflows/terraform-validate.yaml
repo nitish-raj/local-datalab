@@ -11,6 +11,9 @@ on:
 jobs:
     terraform-validate:
       runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          provider: [aws, k8]
       steps:
         - uses: actions/checkout@v6
         - name: Setup Terraform
@@ -19,10 +22,10 @@ jobs:
             terraform_version: latest
         - name: Terraform Format Check
           run: terraform fmt -check
-          working-directory: ./infra/terraform
+          working-directory: ./infra/terraform/${{ matrix.provider }}
         - name: Terraform Init
           run: terraform init
-          working-directory: ./infra/terraform
+          working-directory: ./infra/terraform/${{ matrix.provider }}
         - name: Terraform Validate
           run: terraform validate
-          working-directory: ./infra/terraform
+          working-directory: ./infra/terraform/${{ matrix.provider }}

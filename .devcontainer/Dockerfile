@@ -7,7 +7,7 @@ RUN apt-get update && \
         iputils-ping \
         dnsutils \
         curl unzip groff less \
-        gnupg software-properties-common ca-certificates sudo && \
+        gnupg software-properties-common ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 COPY .devcontainer/requirements.txt /tmp/requirements.txt
