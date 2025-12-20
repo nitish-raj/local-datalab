@@ -1,0 +1,30 @@
+name: python-test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install Airflow and test dependencies
+        run: |
+          pip install apache-airflow pytest pytest-airflow
+      - name: Run Airflow DAG tests
+        run: |
+          python -m pytest tests/test_dags/ -v
+      - name: Run Airflow plugin tests
+        run: |
+          python -m pytest tests/test_plugins/ -v
+    

@@ -1,0 +1,75 @@
+env:
+  - name: AWS_ACCESS_KEY_ID
+    value: test
+  - name: AWS_SECRET_ACCESS_KEY
+    value: test
+  - name: AWS_DEFAULT_REGION
+    value: eu-central-1
+  - name: AIRFLOW__AWS__ENDPOINT_URL
+    value: http://localstack.data-lab.svc.cluster.local:4566
+
+executor: KubernetesExecutor
+
+airflow:
+  connections:
+    - id: aws_default
+      type: aws
+      extra: |
+        {"endpoint_url": "http://localstack.data-lab.svc.cluster.local:4566"}
+
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: "latest"
+  auth:
+    username: airflow
+    password: airflow
+    database: airflow
+
+
+webserver:
+  defaultUser:
+    enabled: true
+    username: admin
+    password: admin
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+scheduler:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+worker:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+triggerer:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+dags:
+  persistence:
+    enabled: true
+    size: 512Mi
