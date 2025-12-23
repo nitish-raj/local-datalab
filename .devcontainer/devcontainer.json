@@ -16,10 +16,10 @@
 		"ghcr.io/devcontainers/features/terraform:1": {}
 	},
 
-	"forwardPorts": [8080],
-
+ 	"forwardPorts": [8080],
+ 
 	"postCreateCommand": "bash .devcontainer/bootstrap.sh",
-	"postStartCommand": "make port-forward",
+	"postStartCommand": "nohup bash .devcontainer/port-forward-manager.sh >/tmp/port-forward-manager.log 2>&1 & disown %1 2>/dev/null || true",
 
 	"customizations": {
 		"vscode": {

@@ -8,8 +8,61 @@ CLUSTER_PROFILE="local-datalab"
 K8_TF_DIR="${REPO_DIR}/infra/terraform/k8"
 AWS_TF_DIR="${REPO_DIR}/infra/terraform/aws"
 
+detect_system_resources() {
+    local os_type
+    os_type="$(uname -s)"
+    
+    # Detect available CPUs
+    if [[ "$os_type" == "Darwin" ]]; then
+        AVAILABLE_CPUS="$(sysctl -n hw.ncpu)"
+    elif [[ "$os_type" == "Linux" ]]; then
+        AVAILABLE_CPUS="$(nproc)"
+    else
+        AVAILABLE_CPUS=2
+    fi
+    
+    # Detect available memory in MB
+    if [[ "$os_type" == "Darwin" ]]; then
+        TOTAL_MEM_BYTES="$(sysctl -n hw.memsize)"
+        AVAILABLE_MEM_MB="$((TOTAL_MEM_BYTES / 1024 / 1024))"
+    elif [[ "$os_type" == "Linux" ]]; then
+        TOTAL_MEM_KB="$(grep MemTotal /proc/meminfo | awk '{print $2}')"
+        AVAILABLE_MEM_MB="$((TOTAL_MEM_KB / 1024))"
+    else
+        AVAILABLE_MEM_MB=4096
+    fi
+    
+    # Detect available disk space in GB (check minikube default location)
+    if [[ "$os_type" == "Darwin" ]]; then
+        MINIKUBE_HOME="${HOME}/.minikube"
+        AVAILABLE_DISK_GB="$(df -h "$MINIKUBE_HOME" 2>/dev/null | awk 'NR==2 {gsub(/[^0-9.]/,"",$4); print $4}' || echo "30")"
+    elif [[ "$os_type" == "Linux" ]]; then
+        MINIKUBE_HOME="${HOME}/.minikube"
+        AVAILABLE_DISK_GB="$(df -h "$MINIKUBE_HOME" 2>/dev/null | awk 'NR==2 {gsub(/[^0-9.]/,"",$4); print $4}' || echo "30")"
+    else
+        AVAILABLE_DISK_GB=30
+    fi
+    
+    # Calculate minikube resources (use 100% of available)
+    MINIKUBE_CPUS=$AVAILABLE_CPUS
+    [[ $MINIKUBE_CPUS -lt 2 ]] && MINIKUBE_CPUS=2
+    
+    MINIKUBE_MEMORY=$AVAILABLE_MEM_MB
+    [[ $MINIKUBE_MEMORY -lt 2048 ]] && MINIKUBE_MEMORY=2048
+    
+    MINIKUBE_DISK="${AVAILABLE_DISK_GB%.0}"
+    [[ $MINIKUBE_DISK -lt 10 ]] && MINIKUBE_DISK=10
+    
+    echo "[bootstrap] System resources detected:"
+    echo "  CPUs: ${AVAILABLE_CPUS} (allocating ${MINIKUBE_CPUS})"
+    echo "  Memory: ${AVAILABLE_MEM_MB}MB (allocating ${MINIKUBE_MEMORY}MB)"
+    echo "  Disk: ${AVAILABLE_DISK_GB}GB available (allocating ${MINIKUBE_DISK}GB)"
+}
+
+detect_system_resources
+
 echo "[bootstrap] Starting minikube"
-minikube start --profile "${CLUSTER_PROFILE}" --cpus=4 --memory=8192 --disk-size=28g
+minikube start --profile "${CLUSTER_PROFILE}" --cpus="${MINIKUBE_CPUS}" --memory="${MINIKUBE_MEMORY}" --disk-size="${MINIKUBE_DISK}g"
 minikube -p "${CLUSTER_PROFILE}" addons enable metrics-server
 
 echo "[bootstrap] Setting kubectl context"
@@ -24,7 +77,8 @@ terraform init
 terraform apply -auto-approve
 
 echo "[bootstrap] Setup localstack port-forward for Terraform"
-kubectl port-forward svc/localstack 4566:4566 -n data-lab >/tmp/localstack-port-forward.log 2>&1 &
+nohup kubectl port-forward svc/localstack 4566:4566 -n data-lab >/tmp/localstack-port-forward.log 2>&1 &
+disown %1 2>/dev/null || true
 sleep 10
 
 echo "[bootstrap] Deploy AWS resources"
@@ -33,7 +87,8 @@ terraform init
 terraform apply -auto-approve
 
 sleep 10
-kubectl port-forward svc/airflow-api-server 8080:8080 -n airflow >/tmp/airflow-port-forward.log 2>&1 &
+nohup kubectl port-forward svc/airflow-api-server 8080:8080 -n airflow >/tmp/airflow-port-forward.log 2>&1 &
+disown %1 2>/dev/null || true
 echo "[bootstrap] Airflow webserver available at http://localhost:8080"
 
 echo "[bootstrap] Wiring VS Code Kubernetes extension tools (kubectl, helm, minikube)"

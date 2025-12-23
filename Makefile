@@ -11,10 +11,16 @@ kube-info:
 s3-buckets:
 	aws --endpoint-url=http://localhost:4566 s3 ls
 
-.PHONY: port-forward
+ .PHONY: port-forward
 port-forward:
-	kubectl port-forward svc/airflow-api-server 8080:8080 -n airflow >/tmp/airflow-port-forward.log 2>&1 &
-	kubectl port-forward svc/localstack 4566:4566 -n data-lab >/tmp/localstack-port-forward.log 2>&1 &
+	nohup kubectl port-forward svc/airflow-api-server 8080:8080 -n airflow >/tmp/airflow-port-forward.log 2>&1 &
+	nohup kubectl port-forward svc/localstack 4566:4566 -n data-lab >/tmp/localstack-port-forward.log 2>&1 &
+	disown %1 2>/dev/null || true
+	disown %2 2>/dev/null || true
+
+.PHONY: port-forward-manager
+port-forward-manager:
+	bash .devcontainer/port-forward-manager.sh
 
 .PHONY: sync-dags
 sync-dags:
