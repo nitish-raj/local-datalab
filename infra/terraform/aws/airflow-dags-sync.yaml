@@ -3,17 +3,17 @@ kind: CronJob
 metadata:
   name: airflow-dags-sync
   namespace: airflow
-  spec:
-    schedule: "*/1 * * * *"
-    successfulJobsHistoryLimit: 1
-    failedJobsHistoryLimit: 1
-    jobTemplate:
-      spec:
-        backoffLimit: 3
-        template:
-          spec:
-            restartPolicy: OnFailure
-            containers:
+spec:
+  schedule: "*/1 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
             - name: s3-sync
               image: amazon/aws-cli:2.15.0
               env:
