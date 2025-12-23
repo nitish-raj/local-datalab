@@ -1,16 +1,27 @@
-provider "aws" {
-  region                      = var.aws_region
-  access_key                  = var.aws_access_key
-  secret_key                  = var.aws_secret_key
-  s3_use_path_style           = true
-  skip_credentials_validation = true
-  skip_requesting_account_id  = true
-  skip_metadata_api_check     = true
+ provider "aws" {
+   region                      = var.aws_region
+   access_key                  = var.aws_access_key
+   secret_key                  = var.aws_secret_key
+   s3_use_path_style           = true
+   skip_credentials_validation = true
+   skip_requesting_account_id  = true
+   skip_metadata_api_check     = true
 
-  endpoints {
-    s3 = var.aws_endpoint
-  }
-}
+   endpoints {
+     s3 = var.aws_endpoint
+   }
+ }
+
+provider "kubernetes" {
+   config_path    = pathexpand("~/.kube/config")
+   config_context = "local-datalab"
+ }
+
+variable "kube_context" {
+   description = "Kubernetes context name"
+   type        = string
+   default     = "local-datalab"
+ }
 
 variable "aws_region" {
   description = "AWS region"
@@ -65,5 +76,14 @@ resource "aws_s3_bucket" "field_timeseries" {
 }
 
 resource "aws_s3_bucket" "airflow_dags" {
-  bucket = var.airflow_dags_bucket
+   bucket = var.airflow_dags_bucket
 }
+
+resource "kubernetes_manifest" "airflow_dags_sync_cronjob" {
+   depends_on = [
+     aws_s3_bucket.airflow_dags
+   ]
+   manifest = yamldecode(
+     file("${path.module}/../k8/airflow-dags-sync.yaml")
+   )
+ }

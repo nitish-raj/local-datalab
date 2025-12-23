@@ -172,9 +172,3 @@ resource "helm_release" "airflow" {
     kubernetes_service_v1.localstack
   ]
 }
-
-resource "kubernetes_manifest" "airflow_dags_sync_cronjob" {
-  manifest = yamldecode(
-    file("${path.module}/../../terraform/k8/airflow-dags-sync.yaml")
-  )
-}

@@ -11,7 +11,8 @@ spec:
     spec:
       template:
         spec:
-          restartPolicy: Never
+          restartPolicy: OnFailure
+          backoffLimit: 3
           containers:
             - name: s3-sync
               image: amazon/aws-cli:2.15.0
@@ -28,8 +29,10 @@ spec:
                 - /bin/sh
                 - -c
                 - >
-                  aws --endpoint-url=${AWS_ENDPOINT_URL}
-                  s3 sync s3://airflow-dags/dags /opt/airflow/dags --delete
+                  aws --endpoint-url=$AWS_ENDPOINT_URL
+                  s3 ls s3://airflow-dags 2>/dev/null || aws --endpoint-url=$AWS_ENDPOINT_URL s3 mb s3://airflow-dags
+                  aws --endpoint-url=$AWS_ENDPOINT_URL
+                  s3 sync s3://airflow-dags/dags /opt/airflow/dags --delete --exact-timestamps || exit 0
               volumeMounts:
                 - name: dags
                   mountPath: /opt/airflow/dags
