@@ -1,3 +1,8 @@
+images:
+  airflow:
+    repository: apache/airflow
+    tag: "3.1.5"
+
 env:
   - name: AWS_ACCESS_KEY_ID
     value: test
