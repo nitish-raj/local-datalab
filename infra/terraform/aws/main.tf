@@ -84,6 +84,6 @@ resource "kubernetes_manifest" "airflow_dags_sync_cronjob" {
      aws_s3_bucket.airflow_dags
    ]
    manifest = yamldecode(
-     file("${path.module}/../k8/airflow-dags-sync.yaml")
+     file("${path.module}/../aws/airflow-dags-sync.yaml")
    )
  }
