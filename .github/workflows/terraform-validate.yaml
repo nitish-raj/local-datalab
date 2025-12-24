@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+    paths:
+      - "infra/terraform/**/*.tf"
+      - "infra/terraform/**/*.tfvars"
 
 jobs:
     terraform-validate:
