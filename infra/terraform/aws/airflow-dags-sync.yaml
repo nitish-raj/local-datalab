@@ -29,10 +29,8 @@ spec:
                 - /bin/sh
                 - -c
                 - >
-                  aws --endpoint-url=$AWS_ENDPOINT_URL
-                  s3 ls s3://airflow-dags 2>/dev/null || aws --endpoint-url=$AWS_ENDPOINT_URL s3 mb s3://airflow-dags
-                  aws --endpoint-url=$AWS_ENDPOINT_URL
-                  s3 sync s3://airflow-dags/dags /opt/airflow/dags --delete --exact-timestamps || exit 0
+                  aws --endpoint-url=${AWS_ENDPOINT_URL}
+                  s3 sync s3://airflow-dags/dags /opt/airflow/dags --delete --exact-timestamps
               volumeMounts:
                 - name: dags
                   mountPath: /opt/airflow/dags

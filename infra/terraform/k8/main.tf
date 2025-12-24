@@ -1,17 +1,17 @@
 variable "kube_context" {
-  type    = string
+  type = string
 }
 
 variable "data_lab_namespace" {
-  type    = string
+  type = string
 }
 
 variable "airflow_namespace" {
-  type    = string
+  type = string
 }
 
 variable "aws_region" {
-  type    = string
+  type = string
 }
 
 provider "kubernetes" {
@@ -70,7 +70,7 @@ resource "kubernetes_deployment_v1" "localstack" {
             claim_name = kubernetes_persistent_volume_claim_v1.localstack.metadata[0].name
           }
         }
-        
+
         container {
           name  = "localstack"
           image = "localstack/localstack:latest"
@@ -104,9 +104,9 @@ resource "kubernetes_deployment_v1" "localstack" {
               memory = "512Mi"
             }
           }
-          
+
           volume_mount {
-            name = "localstack-data"
+            name       = "localstack-data"
             mount_path = "/var/lib/localstack"
           }
         }
@@ -155,14 +155,14 @@ resource "kubernetes_service_v1" "localstack" {
 }
 
 resource "helm_release" "airflow" {
-  name       = "airflow"
-  repository = "https://airflow.apache.org"
-  chart      = "airflow"
-  namespace  = kubernetes_namespace_v1.airflow.metadata[0].name
-  version    = "1.18.0"
+  name            = "airflow"
+  repository      = "https://airflow.apache.org"
+  chart           = "airflow"
+  namespace       = kubernetes_namespace_v1.airflow.metadata[0].name
+  version         = "1.18.0"
   cleanup_on_fail = true
-  timeout    = 1800
-  max_history = 1
+  timeout         = 1800
+  max_history     = 1
 
   values = [
     file("${path.module}/../../airflow-values.yaml")

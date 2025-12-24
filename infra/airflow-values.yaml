@@ -48,36 +48,24 @@ webserver:
     requests:
       cpu: "100m"
       memory: "256Mi"
-    limits:
-      cpu: "500m"
-      memory: "512Mi"
 
 scheduler:
   resources:
     requests:
       cpu: "100m"
       memory: "256Mi"
-    limits:
-      cpu: "500m"
-      memory: "512Mi"
 
 worker:
   resources:
     requests:
       cpu: "100m"
       memory: "256Mi"
-    limits:
-      cpu: "500m"
-      memory: "512Mi"
 
 triggerer:
   resources:
     requests:
       cpu: "100m"
       memory: "256Mi"
-    limits:
-      cpu: "500m"
-      memory: "512Mi"
 
 dags:
   persistence:

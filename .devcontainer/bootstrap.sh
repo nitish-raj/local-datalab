@@ -8,6 +8,60 @@ CLUSTER_PROFILE="local-datalab"
 K8_TF_DIR="${REPO_DIR}/infra/terraform/k8"
 AWS_TF_DIR="${REPO_DIR}/infra/terraform/aws"
 
+echo "[bootstrap] Wiring VS Code Kubernetes extension tools (kubectl, helm, minikube)"
+TOOLS_ROOT="/home/vscode/.local/state/vs-kubernetes/tools"
+
+# symlink helm and minikube: ../tools/linux-amd64/<tool>
+for tool in helm minikube; do
+  if command -v "${tool}" >/dev/null 2>&1; then
+    BIN_PATH="$(command -v "${tool}")"
+    TOOL_DIR="${TOOLS_ROOT}/${tool}/linux-amd64"
+    mkdir -p "${TOOL_DIR}"
+    ln -sf "${BIN_PATH}" "${TOOL_DIR}/${tool}"
+    echo "[bootstrap] Linked ${tool} (${BIN_PATH}) -> ${TOOL_DIR}/${tool}"
+  else
+    echo "[bootstrap] WARNING: ${tool} not found on PATH; skipping wiring"
+  fi
+done
+
+#  symlink kubectl: ../tools/kubectl/kubectl
+if command -v kubectl >/dev/null 2>&1; then
+  KUBECTL_BIN="$(command -v kubectl)"
+  KUBECTL_DIR="${TOOLS_ROOT}/kubectl"
+  mkdir -p "${KUBECTL_DIR}"
+  ln -sf "${KUBECTL_BIN}" "${KUBECTL_DIR}/kubectl"
+  echo "[bootstrap] Linked kubectl (${KUBECTL_BIN}) -> ${KUBECTL_DIR}/kubectl"
+else
+  echo "[bootstrap] WARNING: kubectl not found on PATH; skipping wiring"
+fi
+
+if [[ -n "${TF_PLUGIN_CACHE_DIR:-}" ]]; then
+  mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+fi
+
+terraform_init_with_retry() {
+    local dir="$1"
+    local max_attempts="${2:-3}"
+    local attempt=1
+    local delay=5
+
+    while (( attempt <= max_attempts )); do
+        echo "[bootstrap] terraform init (attempt ${attempt}/${max_attempts}) in ${dir}"
+        if (cd "${dir}" && terraform init); then
+            return 0
+        fi
+
+        if (( attempt == max_attempts )); then
+            return 1
+        fi
+
+        echo "[bootstrap] terraform init failed; retrying in ${delay}s"
+        sleep "${delay}"
+        delay=$((delay * 2))
+        attempt=$((attempt + 1))
+    done
+}
+
 detect_system_resources() {
     local os_type
     os_type="$(uname -s)"
@@ -72,8 +126,8 @@ echo "[bootstrap] Kubernetes nodes"
 kubectl get nodes
 
 echo "[bootstrap] Deploy Kubernetes resources first"
+terraform_init_with_retry "${K8_TF_DIR}"
 cd "${K8_TF_DIR}"
-terraform init
 terraform apply -auto-approve
 
 echo "[bootstrap] Setup localstack port-forward for Terraform"
@@ -82,41 +136,14 @@ disown %1 2>/dev/null || true
 sleep 10
 
 echo "[bootstrap] Deploy AWS resources"
+terraform_init_with_retry "${AWS_TF_DIR}"
 cd "${AWS_TF_DIR}"
-terraform init
 terraform apply -auto-approve
 
 sleep 10
 nohup kubectl port-forward svc/airflow-api-server 8080:8080 -n airflow >/tmp/airflow-port-forward.log 2>&1 &
 disown %1 2>/dev/null || true
 echo "[bootstrap] Airflow webserver available at http://localhost:8080"
-
-echo "[bootstrap] Wiring VS Code Kubernetes extension tools (kubectl, helm, minikube)"
-TOOLS_ROOT="/home/vscode/.local/state/vs-kubernetes/tools"
-
-# helm and minikube: ../tools/linux-amd64/<tool>
-for tool in helm minikube; do
-  if command -v "${tool}" >/dev/null 2>&1; then
-    BIN_PATH="$(command -v "${tool}")"
-    TOOL_DIR="${TOOLS_ROOT}/${tool}/linux-amd64"
-    mkdir -p "${TOOL_DIR}"
-    ln -sf "${BIN_PATH}" "${TOOL_DIR}/${tool}"
-    echo "[bootstrap] Linked ${tool} (${BIN_PATH}) -> ${TOOL_DIR}/${tool}"
-  else
-    echo "[bootstrap] WARNING: ${tool} not found on PATH; skipping wiring"
-  fi
-done
-
-#  kubectl: ../tools/kubectl/kubectl
-if command -v kubectl >/dev/null 2>&1; then
-  KUBECTL_BIN="$(command -v kubectl)"
-  KUBECTL_DIR="${TOOLS_ROOT}/kubectl"
-  mkdir -p "${KUBECTL_DIR}"
-  ln -sf "${KUBECTL_BIN}" "${KUBECTL_DIR}/kubectl"
-  echo "[bootstrap] Linked kubectl (${KUBECTL_BIN}) -> ${KUBECTL_DIR}/kubectl"
-else
-  echo "[bootstrap] WARNING: kubectl not found on PATH; skipping wiring"
-fi
 
 echo "[bootstrap] Ensuring cron DAG sync job is installed"
 SYNC_SCRIPT="${REPO_DIR}/.devcontainer/sync-dags.sh"

@@ -16,6 +16,11 @@
 		"ghcr.io/devcontainers/features/terraform:1": {}
 	},
 
+	"containerEnv": {
+		"TF_REGISTRY_CLIENT_TIMEOUT": "120",
+		"TF_PLUGIN_CACHE_DIR": "/tmp/terraform-plugin-cache"
+	},
+
  	"forwardPorts": [8080],
  
 	"postCreateCommand": "bash .devcontainer/bootstrap.sh",
