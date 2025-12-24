@@ -28,5 +28,8 @@ Local Data Lab is a containerized, local-first data platform based on Airflow an
 3. The container build will run `.devcontainer/bootstrap.sh` on first start; it provisions Minikube, applies Terraform, and starts port forwards. This may take 10-20 minutes depending on system resources and network speed.
 4. After the container starts, access services:
    - Airflow UI: http://localhost:8080 (default user: `admin`, password: `admin`)
-   - Localstack UI: http://localhost:4566
+   - Localstack: It does not have a UI, but you can interact with it using AWS CLI or SDKs at `http://localhost:4566`. For example, list S3 buckets with:
+      ```
+      aws --endpoint-url=http://localhost:4566 s3 ls
+      ```
    - Minikube Dashboard: Run `minikube dashboard -p local-datalab --url` in the devcontainer terminal to get the URL.
