@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: airflow-dags-sync
-  namespace: airflow
+  namespace: ${airflow_namespace}
 spec:
   schedule: "*/1 * * * *"
   successfulJobsHistoryLimit: 1
@@ -18,19 +18,27 @@ spec:
               image: amazon/aws-cli:2.15.0
               env:
                 - name: AWS_ACCESS_KEY_ID
-                  value: "test"
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${aws_credentials_secret_name}
+                      key: AWS_ACCESS_KEY_ID
                 - name: AWS_SECRET_ACCESS_KEY
-                  value: "test"
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${aws_credentials_secret_name}
+                      key: AWS_SECRET_ACCESS_KEY
                 - name: AWS_DEFAULT_REGION
-                  value: "eu-central-1"
+                  value: ${aws_region}
                 - name: AWS_ENDPOINT_URL
-                  value: "http://localstack.data-lab.svc.cluster.local:4566"
+                  value: "${localstack_endpoint_url}"
+                - name: AIRFLOW_DAGS_BUCKET
+                  value: ${airflow_dags_bucket}
               command:
                 - /bin/sh
                 - -c
                 - >
-                  aws --endpoint-url=${AWS_ENDPOINT_URL}
-                  s3 sync s3://airflow-dags/dags /opt/airflow/dags --delete --exact-timestamps
+                  aws --endpoint-url=$${AWS_ENDPOINT_URL}
+                  s3 sync s3://$${AIRFLOW_DAGS_BUCKET}/dags /opt/airflow/dags --delete --exact-timestamps
               volumeMounts:
                 - name: dags
                   mountPath: /opt/airflow/dags

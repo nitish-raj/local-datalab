@@ -1,31 +1,3 @@
-variable "kube_context" {
-  type = string
-}
-
-variable "data_lab_namespace" {
-  type = string
-}
-
-variable "airflow_namespace" {
-  type = string
-}
-
-variable "aws_region" {
-  type = string
-}
-
-provider "kubernetes" {
-  config_path    = pathexpand("~/.kube/config")
-  config_context = var.kube_context
-}
-
-provider "helm" {
-  kubernetes = {
-    config_path    = pathexpand("~/.kube/config")
-    config_context = var.kube_context
-  }
-}
-
 resource "kubernetes_namespace_v1" "data_lab" {
   metadata {
     name = var.data_lab_namespace
@@ -36,6 +8,20 @@ resource "kubernetes_namespace_v1" "airflow" {
   metadata {
     name = var.airflow_namespace
   }
+}
+
+resource "kubernetes_secret_v1" "airflow_aws_credentials" {
+  metadata {
+    name      = local.aws_credentials_secret_name
+    namespace = kubernetes_namespace_v1.airflow.metadata[0].name
+  }
+
+  data = {
+    AWS_ACCESS_KEY_ID     = var.aws_access_key
+    AWS_SECRET_ACCESS_KEY = var.aws_secret_key
+  }
+
+  type = "Opaque"
 }
 
 resource "kubernetes_deployment_v1" "localstack" {
@@ -165,10 +151,22 @@ resource "helm_release" "airflow" {
   max_history     = 1
 
   values = [
-    file("${path.module}/../../airflow-values.yaml")
+    templatefile("${path.module}/../../airflow-values.yaml", {
+      aws_region                  = var.aws_region
+      localstack_endpoint_url     = local.localstack_endpoint_url
+      kube_context                = var.kube_context
+      data_lab_namespace          = var.data_lab_namespace
+      airflow_namespace           = var.airflow_namespace
+      raw_satellite_bucket        = var.raw_satellite_bucket
+      processed_aoi_bucket        = var.processed_aoi_bucket
+      field_timeseries_bucket     = var.field_timeseries_bucket
+      airflow_dags_bucket         = var.airflow_dags_bucket
+      aws_credentials_secret_name = local.aws_credentials_secret_name
+    })
   ]
 
   depends_on = [
-    kubernetes_service_v1.localstack
+    kubernetes_service_v1.localstack,
+    kubernetes_secret_v1.airflow_aws_credentials
   ]
 }

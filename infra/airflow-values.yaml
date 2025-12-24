@@ -4,14 +4,36 @@ images:
     tag: "3.1.5"
 
 env:
-  - name: AWS_ACCESS_KEY_ID
-    value: test
-  - name: AWS_SECRET_ACCESS_KEY
-    value: test
   - name: AWS_DEFAULT_REGION
-    value: eu-central-1
+    value: ${aws_region}
+  - name: AWS_ENDPOINT_URL
+    value: "${localstack_endpoint_url}"
+  - name: KUBE_CONTEXT
+    value: ${kube_context}
+  - name: DATA_LAB_NAMESPACE
+    value: ${data_lab_namespace}
+  - name: AIRFLOW_NAMESPACE
+    value: ${airflow_namespace}
+  - name: RAW_SATELLITE_BUCKET
+    value: ${raw_satellite_bucket}
+  - name: PROCESSED_AOI_BUCKET
+    value: ${processed_aoi_bucket}
+  - name: FIELD_TIMESERIES_BUCKET
+    value: ${field_timeseries_bucket}
+  - name: AIRFLOW_DAGS_BUCKET
+    value: ${airflow_dags_bucket}
+  - name: AIRFLOW_AWS_ENDPOINT_URL
+    value: "${localstack_endpoint_url}"
   - name: AIRFLOW__AWS__ENDPOINT_URL
-    value: http://localstack.data-lab.svc.cluster.local:4566
+    value: "${localstack_endpoint_url}"
+
+secret:
+  - envName: AWS_ACCESS_KEY_ID
+    secretName: ${aws_credentials_secret_name}
+    secretKey: AWS_ACCESS_KEY_ID
+  - envName: AWS_SECRET_ACCESS_KEY
+    secretName: ${aws_credentials_secret_name}
+    secretKey: AWS_SECRET_ACCESS_KEY
 
 executor: KubernetesExecutor
 
@@ -22,7 +44,7 @@ airflow:
     - id: aws_default
       type: aws
       extra: |
-        {"endpoint_url": "http://localstack.data-lab.svc.cluster.local:4566"}
+        {"endpoint_url": "${localstack_endpoint_url}"}
 
 postgresql:
   enabled: true
