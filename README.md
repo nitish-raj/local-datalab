@@ -3,7 +3,7 @@
 
 # Local Data Lab
 
-Local Data Lab is a containerized, local-first data platform based on Airflow and Localstack on Minikube (k8) and deployed using Terraform for pipelines and infrastructure.
+Local Data Lab is a containerized, local-first data platform based on Airflow and Localstack (AWS) on Minikube (k8) with IaC using Terraform.
 
 ## System Requirements
 - macOS, Linux, or Windows (with WSL2) capable of running Docker
