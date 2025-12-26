@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-CLUSTER_PROFILE="local-datalab"
+: "${KUBE_CONTEXT:?KUBE_CONTEXT env var must be set}"
 K8_TF_DIR="${REPO_DIR}/infra/terraform/k8"
 AWS_TF_DIR="${REPO_DIR}/infra/terraform/aws"
 
@@ -116,14 +116,22 @@ detect_system_resources() {
 detect_system_resources
 
 echo "[bootstrap] Starting minikube"
-minikube start --profile "${CLUSTER_PROFILE}" --cpus="${MINIKUBE_CPUS}" --memory="${MINIKUBE_MEMORY}" --disk-size="${MINIKUBE_DISK}g"
-minikube -p "${CLUSTER_PROFILE}" addons enable metrics-server
+minikube start --profile "${KUBE_CONTEXT}" --cpus="${MINIKUBE_CPUS}" --memory="${MINIKUBE_MEMORY}" --disk-size="${MINIKUBE_DISK}g"
+minikube -p "${KUBE_CONTEXT}" addons enable metrics-server
 
 echo "[bootstrap] Setting kubectl context"
-kubectl config use-context "${CLUSTER_PROFILE}"
+kubectl config use-context "${KUBE_CONTEXT}"
 
 echo "[bootstrap] Kubernetes nodes"
 kubectl get nodes
+
+echo "[bootstrap] Building Airflow image in minikube docker"
+if command -v docker >/dev/null 2>&1; then
+  eval "$(minikube -p "${KUBE_CONTEXT}" docker-env)"
+  docker build -t local/airflow:dev -f "${REPO_DIR}/airflow/Dockerfile" "${REPO_DIR}"
+else
+  echo "[bootstrap] WARNING: docker not found on PATH; skipping Airflow image build"
+fi
 
 echo "[bootstrap] Deploy Kubernetes resources first"
 terraform_init_with_retry "${K8_TF_DIR}"

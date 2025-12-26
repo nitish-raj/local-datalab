@@ -34,11 +34,6 @@ variable "processed_aoi_bucket" {
   type        = string
 }
 
-variable "field_timeseries_bucket" {
-  description = "Field timeseries data bucket name"
-  type        = string
-}
-
 variable "airflow_dags_bucket" {
   description = "Airflow DAGs bucket name"
   type        = string

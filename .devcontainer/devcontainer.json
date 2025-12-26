@@ -15,13 +15,13 @@
 		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
 		"ghcr.io/devcontainers/features/terraform:1": {}
 	},
-
+	
 	"containerEnv": {
 		"TF_REGISTRY_CLIENT_TIMEOUT": "120",
-		"TF_PLUGIN_CACHE_DIR": "/tmp/terraform-plugin-cache"
+		"TF_PLUGIN_CACHE_DIR": "/home/vscode/.cache/terraform/plugin-cache"
 	},
-
- 	"forwardPorts": [8080],
+ 	
+	"forwardPorts": [8080],
  
 	"postCreateCommand": "bash .devcontainer/bootstrap.sh",
 	"postStartCommand": "nohup bash .devcontainer/port-forward-manager.sh >/tmp/port-forward-manager.log 2>&1 & disown %1 2>/dev/null || true",

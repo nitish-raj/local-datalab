@@ -6,10 +6,6 @@ resource "aws_s3_bucket" "processed_aoi" {
   bucket = var.processed_aoi_bucket
 }
 
-resource "aws_s3_bucket" "field_timeseries" {
-  bucket = var.field_timeseries_bucket
-}
-
 resource "aws_s3_bucket" "airflow_dags" {
   bucket = var.airflow_dags_bucket
 }

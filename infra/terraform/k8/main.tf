@@ -76,17 +76,22 @@ resource "kubernetes_deployment_v1" "localstack" {
             value = var.aws_region
           }
 
+          env {
+            name  = "PERSISTENCE"
+            value = "1"
+          }
+
           port {
             container_port = 4566
           }
 
           resources {
             limits = {
-              cpu    = "1000m"
+              cpu    = "1"
               memory = "1Gi"
             }
             requests = {
-              cpu    = "250m"
+              cpu    = "0.5"
               memory = "512Mi"
             }
           }
@@ -159,7 +164,6 @@ resource "helm_release" "airflow" {
       airflow_namespace           = var.airflow_namespace
       raw_satellite_bucket        = var.raw_satellite_bucket
       processed_aoi_bucket        = var.processed_aoi_bucket
-      field_timeseries_bucket     = var.field_timeseries_bucket
       airflow_dags_bucket         = var.airflow_dags_bucket
       aws_credentials_secret_name = local.aws_credentials_secret_name
     })

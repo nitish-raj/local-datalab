@@ -12,5 +12,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY .devcontainer/requirements.txt /tmp/requirements.txt
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
     rm /tmp/requirements.txt

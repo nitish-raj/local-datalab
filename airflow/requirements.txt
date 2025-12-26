@@ -1,0 +1,8 @@
+pandas
+numpy
+boto3
+rasterio
+planetary-computer
+geopandas
+pystac-client
+stackstac

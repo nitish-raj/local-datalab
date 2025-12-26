@@ -6,7 +6,29 @@ AIRFLOW_LOG="${LOG_DIR}/airflow-port-forward.log"
 LOCALSTACK_LOG="${LOG_DIR}/localstack-port-forward.log"
 PID_DIR="/tmp/port-forward-pids"
 
+: "${KUBE_CONTEXT:?KUBE_CONTEXT env var must be set}"
+
 mkdir -p "${PID_DIR}"
+
+ensure_minikube_running() {
+    if ! command -v minikube >/dev/null 2>&1; then
+        echo "[$(date)] WARNING: minikube not found on PATH; skipping minikube start" >> "${AIRFLOW_LOG}"
+        return 0
+    fi
+
+    if minikube status -p "${KUBE_CONTEXT}" >/dev/null 2>&1; then
+        return 0
+    fi
+
+    echo "[$(date)] Starting minikube profile ${KUBE_CONTEXT}..." >> "${AIRFLOW_LOG}"
+    minikube start -p "${KUBE_CONTEXT}" >> "${AIRFLOW_LOG}" 2>&1
+}
+
+set_kube_context() {
+    if command -v kubectl >/dev/null 2>&1; then
+        kubectl config use-context "${KUBE_CONTEXT}" >/dev/null 2>&1 || true
+    fi
+}
 
 kill_existing_forwards() {
     if [ -f "${PID_DIR}/airflow.pid" ]; then
@@ -53,6 +75,8 @@ wait_for_service_ready() {
 }
 
 echo "[$(date)] Port-forward manager starting..."
+ensure_minikube_running
+set_kube_context
 kill_existing_forwards
 
 wait_for_service_ready "airflow-api-server" "airflow"

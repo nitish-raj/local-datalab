@@ -7,8 +7,8 @@ kube-info:
 	kubectl get pods -A
 	kubectl get cronjob -A
 
-.PHONY: s3-buckets
-s3-buckets:
+.PHONY: list-s3-buckets
+list-s3-buckets:
 	aws --endpoint-url=http://localhost:4566 s3 ls
 
  .PHONY: port-forward
@@ -25,7 +25,13 @@ port-forward-manager:
 .PHONY: sync-dags
 sync-dags:
 	aws --endpoint-url=http://127.0.0.1:4566 s3 sync \
-		./airflow s3://airflow-dags/dags --delete
+		./airflow/dags s3://airflow-dags/dags --delete
 
 list-dags:
 	aws --endpoint-url=http://127.0.0.1:4566 s3 ls s3://airflow-dags --recursive
+
+show-raw-data:
+	aws --endpoint-url=http://127.0.0.1:4566 s3 ls s3://raw-satellite-data --recursive
+
+show-processed-data:
+	aws --endpoint-url=http://127.0.0.1:4566 s3 ls s3://processed-aoi-data --recursive

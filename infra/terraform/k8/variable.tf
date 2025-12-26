@@ -30,10 +30,6 @@ variable "processed_aoi_bucket" {
   type = string
 }
 
-variable "field_timeseries_bucket" {
-  type = string
-}
-
 variable "airflow_dags_bucket" {
   type = string
 }
