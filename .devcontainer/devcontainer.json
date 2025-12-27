@@ -24,7 +24,7 @@
 	"forwardPorts": [8080],
  
 	"postCreateCommand": "bash .devcontainer/bootstrap.sh",
-	"postStartCommand": "nohup bash .devcontainer/port-forward-manager.sh >/tmp/port-forward-manager.log 2>&1 & disown %1 2>/dev/null || true",
+	"postStartCommand": "bash .devcontainer/poststart.sh",
 
 	"customizations": {
 		"vscode": {

@@ -85,28 +85,4 @@ start_airflow_forward
 wait_for_service_ready "localstack" "data-lab"
 start_localstack_forward
 
-echo "[$(date)] Port-forwards started. Watching for crashes..."
-
-while true; do
-    sleep 5
-
-    if [ -f "${PID_DIR}/airflow.pid" ]; then
-        if ! kill -0 $(cat "${PID_DIR}/airflow.pid") 2>/dev/null; then
-            echo "[$(date)] Airflow port-forward died, restarting..." >> "${AIRFLOW_LOG}"
-            start_airflow_forward
-        fi
-    else
-        echo "[$(date)] Airflow PID file missing, starting..." >> "${AIRFLOW_LOG}"
-        start_airflow_forward
-    fi
-
-    if [ -f "${PID_DIR}/localstack.pid" ]; then
-        if ! kill -0 $(cat "${PID_DIR}/localstack.pid") 2>/dev/null; then
-            echo "[$(date)] LocalStack port-forward died, restarting..." >> "${LOCALSTACK_LOG}"
-            start_localstack_forward
-        fi
-    else
-        echo "[$(date)] LocalStack PID file missing, starting..." >> "${LOCALSTACK_LOG}"
-        start_localstack_forward
-    fi
-done
+echo "[$(date)] Port-forwards started."

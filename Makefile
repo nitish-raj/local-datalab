@@ -27,11 +27,14 @@ sync-dags:
 	aws --endpoint-url=http://127.0.0.1:4566 s3 sync \
 		./airflow/dags s3://airflow-dags/dags --delete
 
+.PHONY: list-dags
 list-dags:
 	aws --endpoint-url=http://127.0.0.1:4566 s3 ls s3://airflow-dags --recursive
 
+.PHONY:show-raw-data
 show-raw-data:
 	aws --endpoint-url=http://127.0.0.1:4566 s3 ls s3://raw-satellite-data --recursive
 
+.PHONY:show-processed-data
 show-processed-data:
 	aws --endpoint-url=http://127.0.0.1:4566 s3 ls s3://processed-aoi-data --recursive
