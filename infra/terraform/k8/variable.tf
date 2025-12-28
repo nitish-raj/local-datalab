@@ -33,3 +33,7 @@ variable "processed_aoi_bucket" {
 variable "airflow_dags_bucket" {
   type = string
 }
+
+variable "airflow_logs_bucket" {
+  type = string
+}

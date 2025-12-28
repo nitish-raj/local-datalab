@@ -10,6 +10,10 @@ resource "aws_s3_bucket" "airflow_dags" {
   bucket = var.airflow_dags_bucket
 }
 
+resource "aws_s3_bucket" "airflow_logs" {
+  bucket = var.airflow_logs_bucket
+}
+
 resource "kubernetes_manifest" "airflow_dags_sync_cronjob" {
   depends_on = [
     aws_s3_bucket.airflow_dags

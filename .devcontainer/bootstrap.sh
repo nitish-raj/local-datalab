@@ -154,13 +154,13 @@ disown %1 2>/dev/null || true
 echo "[bootstrap] Airflow webserver available at http://localhost:8080"
 
 echo "[bootstrap] Ensuring cron DAG sync job is installed"
-SYNC_SCRIPT="${REPO_DIR}/.devcontainer/sync-dags.sh"
-CRON_LINE="*/1 * * * * /bin/bash ${SYNC_SCRIPT} >> /tmp/sync-dags.log 2>&1"
+SYNC_SCRIPT="${REPO_DIR}/.devcontainer/sync-local-to-s3.sh"
+CRON_LINE="*/1 * * * * /bin/bash ${SYNC_SCRIPT} >> /tmp/sync-local-to-s3.log 2>&1"
 
 if [ -f "${SYNC_SCRIPT}" ]; then
   if command -v crontab >/dev/null 2>&1; then
-    ( crontab -l 2>/dev/null | grep -v 'sync-dags.sh' || true; echo "${CRON_LINE}" ) | crontab -
-    echo "[bootstrap] Installed/updated cron entry for sync-dags.sh"
+    ( crontab -l 2>/dev/null | grep -v 'sync-local-to-s3.sh' || true; echo "${CRON_LINE}" ) | crontab -
+    echo "[bootstrap] Installed/updated cron entry for sync-local-to-s3.sh"
   else
     echo "[bootstrap] WARNING: crontab binary not found; skipping cron job install"
   fi

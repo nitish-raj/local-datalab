@@ -39,6 +39,11 @@ variable "airflow_dags_bucket" {
   type        = string
 }
 
+variable "airflow_logs_bucket" {
+  description = "Airflow logs bucket name"
+  type        = string
+}
+
 variable "data_lab_namespace" {
   description = "Kubernetes namespace for data lab services"
   type        = string

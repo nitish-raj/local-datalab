@@ -24,6 +24,23 @@ env:
     value: "${localstack_endpoint_url}"
   - name: AIRFLOW__AWS__ENDPOINT_URL
     value: "${localstack_endpoint_url}"
+  - name: AIRFLOW__LOGGING__REMOTE_LOGGING
+    value: "true"
+  - name: AIRFLOW__LOGGING__REMOTE_BASE_LOG_FOLDER
+    value: "s3://${airflow_logs_bucket}"
+  - name: AIRFLOW__LOGGING__REMOTE_LOG_CONN_ID
+    value: "aws_default"
+  - name: AIRFLOW_CONN_AWS_DEFAULT
+    value: |
+      {
+        "conn_type": "aws",
+        "login": "${aws_access_key}",
+        "password": "${aws_secret_key}",
+        "extra": {
+          "region_name": "${aws_region}",
+          "endpoint_url": "http://localstack.${data_lab_namespace}.svc.cluster.local:4566"
+        }
+      }
 
 secret:
   - envName: AWS_ACCESS_KEY_ID
@@ -38,11 +55,6 @@ executor: KubernetesExecutor
 airflow:
   migrationsWaitTimeout: 600
   AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 30
-  connections:
-    - id: aws_default
-      type: aws
-      extra: |
-        {"endpoint_url": "${localstack_endpoint_url}"}
 
 postgresql:
   enabled: true

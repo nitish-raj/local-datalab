@@ -20,10 +20,11 @@ jobs:
       - name: Install Airflow and test dependencies
         run: |
           pip install apache-airflow pytest pytest-airflow
+          pip install -r airflow/requirements.txt
       - name: Run Airflow DAG tests
         run: |
-          python -m pytest tests/test_dags/ -v
+          python -m pytest airflow/tests/test_dags/ -v
       - name: Run Airflow plugin tests
         run: |
-          python -m pytest tests/test_plugins/ -v
+          python -m pytest airflow/tests/test_plugins/ -v
     

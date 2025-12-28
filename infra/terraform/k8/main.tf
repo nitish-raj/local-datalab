@@ -158,6 +158,8 @@ resource "helm_release" "airflow" {
   values = [
     templatefile("${path.module}/../../airflow-values.yaml", {
       aws_region                  = var.aws_region
+      aws_access_key              = var.aws_access_key
+      aws_secret_key              = var.aws_secret_key
       localstack_endpoint_url     = local.localstack_endpoint_url
       kube_context                = var.kube_context
       data_lab_namespace          = var.data_lab_namespace
@@ -165,6 +167,7 @@ resource "helm_release" "airflow" {
       raw_satellite_bucket        = var.raw_satellite_bucket
       processed_aoi_bucket        = var.processed_aoi_bucket
       airflow_dags_bucket         = var.airflow_dags_bucket
+      airflow_logs_bucket         = var.airflow_logs_bucket
       aws_credentials_secret_name = local.aws_credentials_secret_name
     })
   ]
