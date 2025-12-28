@@ -8,22 +8,10 @@ env:
     value: ${aws_region}
   - name: AWS_ENDPOINT_URL
     value: "${localstack_endpoint_url}"
-  - name: KUBE_CONTEXT
-    value: ${kube_context}
-  - name: DATA_LAB_NAMESPACE
-    value: ${data_lab_namespace}
-  - name: AIRFLOW_NAMESPACE
-    value: ${airflow_namespace}
   - name: RAW_SATELLITE_BUCKET
     value: ${raw_satellite_bucket}
   - name: PROCESSED_AOI_BUCKET
     value: ${processed_aoi_bucket}
-  - name: AIRFLOW_DAGS_BUCKET
-    value: ${airflow_dags_bucket}
-  - name: AIRFLOW_AWS_ENDPOINT_URL
-    value: "${localstack_endpoint_url}"
-  - name: AIRFLOW__AWS__ENDPOINT_URL
-    value: "${localstack_endpoint_url}"
   - name: AIRFLOW__LOGGING__REMOTE_LOGGING
     value: "true"
   - name: AIRFLOW__LOGGING__REMOTE_BASE_LOG_FOLDER
