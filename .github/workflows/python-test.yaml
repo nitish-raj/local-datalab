@@ -19,7 +19,7 @@ jobs:
           cache: 'pip'
       - name: Install Airflow and test dependencies
         run: |
-          pip install apache-airflow pytest pytest-airflow
+          pip install apache-airflow pytest
           pip install -r airflow/requirements.txt
       - name: Run Airflow DAG tests
         run: |
