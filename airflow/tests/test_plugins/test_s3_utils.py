@@ -1,12 +1,13 @@
 import sys
 from pathlib import Path
-from utils import s3_utils
-from utils.s3_utils import _s3_local, get_s3_object, write_to_s3, parse_s3
 
 
 REPO_DIR = Path(__file__).resolve().parents[3]
 DAGS_DIR = REPO_DIR / "airflow" / "dags"
 sys.path.insert(0, str(DAGS_DIR))
+
+from utils import s3_utils
+from utils.s3_utils import _s3_local, get_s3_object, write_to_s3, parse_s3
 
 
 def test_parse_s3():

@@ -7,7 +7,7 @@ Local Data Lab is a containerized, local-first data platform based on Airflow an
 
 ## Architecture Diagram
 ```mermaid
-%%{init: {'flowchart': {'htmlLabels': true}, 'layout': 'elk', 'theme': 'base', 'themeVariables': {'fontSize': '14px'}}}%%
+%%{init: {'flowchart': {'htmlLabels': true}, 'layout': 'elk', 'theme': 'base', 'themeVariables': {'fontSize': '14px', 'background': '#ffffff'}}}%%
 flowchart LR
   subgraph DevcontainerBox["<span style='font-size:16px; font-weight:600'>Devcontainer (VS Code + Docker)</span>"]
     direction LR
