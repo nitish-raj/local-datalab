@@ -521,7 +521,7 @@
 - Hardware virtualization enabled (required by Docker Desktop/WSL2)
 
 ## Devcontainer Prerequisites
-- Docker Desktop or Docker Engine with Compose v2
+- Docker Desktop or Docker Engine (with any VM)
   - Install: https://docs.docker.com/get-docker/
   - Must allow privileged containers and bind-mounting the repo directory
 - VS Code with the Dev Containers extension (or a compatible devcontainer CLI)
