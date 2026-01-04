@@ -16,9 +16,9 @@ port-forward:
 	disown %1 2>/dev/null || true
 	disown %2 2>/dev/null || true
 
-.PHONY: port-forward-manager
-port-forward-manager:
-	bash .devcontainer/port-forward-manager.sh
+.PHONY: poststart
+poststart:
+	bash .devcontainer/poststart.sh
 
 .PHONY: sync-dags
 sync-dags:
@@ -42,6 +42,10 @@ show-raw-data:
 .PHONY:show-processed-data
 show-processed-data:
 	aws --endpoint-url=$(AWS_ENDPOINT_URL) s3 ls s3://$(PROCESSED_AOI_BUCKET) --recursive
+
+.PHONY:delete-processed-data
+delete-processed-data:
+	aws --endpoint-url=$(AWS_ENDPOINT_URL) s3 rm s3://$(PROCESSED_AOI_BUCKET) --recursive
 
 .PHONY: show-dag-log
 show-dag-log:

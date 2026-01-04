@@ -12,7 +12,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F001",
-                "planting_date": "2025-03-15"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -58,7 +58,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F002",
-                "planting_date": "2025-03-18"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -92,7 +92,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F003",
-                "planting_date": "2025-03-21"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -130,7 +130,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F004",
-                "planting_date": "2025-03-24"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -164,7 +164,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F005",
-                "planting_date": "2025-03-27"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -198,7 +198,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F006",
-                "planting_date": "2025-03-30"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -232,7 +232,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F007",
-                "planting_date": "2025-04-02"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -270,7 +270,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F008",
-                "planting_date": "2025-04-05"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -304,7 +304,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F009",
-                "planting_date": "2025-04-08"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -338,7 +338,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F010",
-                "planting_date": "2025-04-11"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -372,7 +372,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F011",
-                "planting_date": "2025-04-14"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -406,7 +406,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F012",
-                "planting_date": "2025-04-17"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",
@@ -440,7 +440,7 @@
             "type": "Feature",
             "properties": {
                 "field_id": "F013",
-                "planting_date": "2025-04-20"
+                "planting_date": "2026-01-01"
             },
             "geometry": {
                 "type": "Polygon",

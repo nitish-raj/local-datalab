@@ -12,3 +12,4 @@ stackstac
 scikit-learn
 apache-airflow-providers-amazon
 black
+ruff

@@ -1,4 +1,3 @@
-import os
 import sys
 from pathlib import Path
 
@@ -17,8 +16,8 @@ def test_dags_import_without_errors():
     assert dagbag.import_errors == {}
 
     expected = {
-        "calculate_daily_ndvi",
-        "ingest_sentinel2_data",
-        "simulate_aoi_from_fields",
+        "01_simulate_aoi_from_fields",
+        "02_ingest_sentinel2_data",
+        "03_calculate_daily_ndvi",
     }
     assert expected.issubset(set(dagbag.dag_ids))

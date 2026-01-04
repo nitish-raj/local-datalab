@@ -18,6 +18,8 @@ env:
     value: "s3://${airflow_logs_bucket}"
   - name: AIRFLOW__LOGGING__REMOTE_LOG_CONN_ID
     value: "aws_default"
+  - name: AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION
+    value: "false"
   - name: AIRFLOW_CONN_AWS_DEFAULT
     value: |
       {
@@ -92,6 +94,8 @@ dags:
     enabled: true
     size: 512Mi
 
+# To avoid immutable Job manifest issues and to keep updates stable when deploying using Terraform
+# https://airflow.apache.org/docs/helm-chart/stable/index.html#installing-the-chart-with-argo-cd-flux-rancher-or-terraform
 createUserJob:
   useHelmHooks: false
   applyCustomEnv: false
