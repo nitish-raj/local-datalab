@@ -1,17 +1,41 @@
-[![terraform-validate](https://github.com/nitish-raj/local-datalab/actions/workflows/terraform-validate.yaml/badge.svg)](https://github.com/nitish-raj/local-datalab/actions/workflows/terraform-validate.yaml)
-[![python-test](https://github.com/nitish-raj/local-datalab/actions/workflows/python-test.yaml/badge.svg)](https://github.com/nitish-raj/local-datalab/actions/workflows/python-test.yaml)
+<div align="center">
+  <img src="icon.png" width="100px" alt="Local DataLab" />
+  <h1>Local Data Lab</h1>
 
-# Local Data Lab
+  <p>Local Data Lab is a containerized, local-first data platform based on Airflow and Localstack (AWS) on Minikube (k8) with IaC using Terraform.</p>
 
-Local Data Lab is a containerized, local-first data platform based on Airflow and Localstack (AWS) on Minikube (k8) with IaC using Terraform.
+  <p>
+    <img src="https://img.shields.io/badge/Apache%20Airflow-017CEE?logo=apacheairflow&logoColor=fff" alt="Airflow">
+    <img src="https://img.shields.io/badge/LocalStack-23B0A6?logo=localstack&logoColor=white" alt="LocalStack">
+    <img src="https://img.shields.io/badge/Minikube-2B6CB0?logo=minikube&logoColor=white" alt="Minikube">
+    <img src="https://img.shields.io/badge/Kubernetes-326CE5?&style=plastic&logo=kubernetes&logoColor=white" alt="Kubernetes">
+    <img src="https://img.shields.io/badge/Terraform-7B42BC?logo=terraform&logoColor=white" alt="Terraform">
+    <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python">
+    <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white" alt="Docker">
+  </p>
+  <a href="https://github.com/nitish-raj/local-datalab/actions/workflows/terraform-validate.yaml">
+    <img src="https://github.com/nitish-raj/local-datalab/actions/workflows/terraform-validate.yaml/badge.svg" alt="terraform-validate">
+  </a>
+  <a href="https://github.com/nitish-raj/local-datalab/actions/workflows/python-test.yaml">
+    <img src="https://github.com/nitish-raj/local-datalab/actions/workflows/python-test.yaml/badge.svg" alt="python-test">
+  </a>
+
+</div>
 
 ## Architecture Diagram
-![Infra Architecture](assets/infra_architecture.png)
+![Infra Architecture](https://mermaid.ink/svg/pako:eNqlWG1v2zYQ_iuE-qE2RiWSJcu22hVI423NlhZZ3BdgdRHQEmkLlkWDpGKndf_7SL1QlC0HA5ZPIe-ee7_jyT-siMbYCi3btudZRDOSLMN5BgBJ6S5aISaKEwArsUlv0QKnPASC5VjdpuiJ5iIEOF2ro1jhDQ7BAnGsj58RS9AixbwSQ2gmZsl3yeb62_08K9RqXeD2XrHxfLFkaLsCU_woTRIoyTB7S_df59ZrvkUZ4OIpxb--VMJsrqS5wXb_qhBu73CyXIkwcJyXb0w86H2egWvpLPgFTGm0xqz_-lJJezO3vpXGxQnDkUhoVthR3pm23GIipA22BpiQj2_ru4rzKotWlPV6oN8Pw7CMVc3yETOGCGUbKY6gkCBbpaG5Br0kIwxdivqib-i8pRFKp2jJNZjQNJYeTq_-4KB3cYkSpkJqYq4Zzd5RLhp9qYwBUFcFTcJiI1iX_CmL7FjquOCrTt3Att8cFBfgNGcRPmgVJSvO4pMQvk-yZJ0v8HWac-nZM-kcdqazxoNKwHH-jjNY3tWo5_KhTfwwmyKBnrHM77TsA9pgCYgwiCXcTtHi1LbuYqlCygWK1rPHSOcH72VHZEtso1SAGWaPiRSeatbQHwZBS3gj5o7GTZpVuBoSkLRzqM_XX3slaBXHhip7-xj1v9XJbEVr5r3NZScJVYmGkpkHqvuWru70qL97tNMWIxatkkcMGNo9cCRwmiYCPywKeUfi7hiNMOc4PgFva8oDokk3WBVxaeUJuuqfB1X_XWCjtk8SWPTF1Rc5am5vwKUKxdXdzaGdnTNJU9AmpM8wHeRB4EM7eTV_yzijrq9Kp_5HaVdh-e-VXal8h9NNuyArAlAUcI9TrJ4MU97VNlE1X8yIEseLowomKCmgV9kD0DapyP2WkFm0wnGeGkJkuGR4ECubqia3QLIsqrKiDY4kadmIkgo0uYX7Qtna1ETliCzvQO8v6TPLsMD8tz2OckGPDP3IkuUSMwO-oFKZvm4x38kRu2SY182qBo56cmvC7O_bftsfftTaVdyK8Q4krX8aeDlsnp9EtYwm9uHYGTvHoeTqUTh6c9TVn3TRMsNWL0kB7qyeojN0TZxnaVJ6lsXM73muMnPn6U1qzrLUeWq5VLtgOiTDeY6jSl5HSXeTTee6OaqS7KRpp7rJHZEs0tsaPOeefrkT3auZ8t_Wp4L1uff6jjLxO2U7xJrZz1AW001BklOsoIHjoqx8-HSjUcuUGgPp043BbCgp81WDDTdP9r2Cs71ylFztuzKCLU_rmDVLoBr1zewAspiKVYsfjjepEtjUU1WA2nxF11lpHr7yLfGAar5DK5_1_wXHjskXmB_Miqh3vVMJpeRSU5QizqeYgGKZBXKKpuELjElACOSC0TUOX3iL8YAEMKIpZeELh7ijAXrVAtdjvoSTERka8FHkIRzXcJe4rj9qw5tFpjaAECQ11hJcZzEZu9qAobc4NiDJZIgzlIISIgcWlx8rDD2FwAcerOxySEz8RmqAPB81UgfYDdpS1dw2_SJkJB2p8WQy8lwdFt9zfefIrzypkTEZkLFG4sgfTyYaiRzfx0cRKVqpRAvZNfI5ZzgTtQTzqpRi3BSS0iRbz9T6ANwxdCegA1iFapfEYhU6232nJG1VU_PwqLLh0SdgWUqNP-ZUgnp4Qj0noTkSYTn9oB50sB7SsOkdWJU51D1QFaChVC9pujYMYmsdhK3lDbY2NijXXqh3WGj0ZVOzhlyjn6EeRbIMDJa6LWHzmVaX2SsLWkuWxJYceinH0NpgtkHqbP1QAuZW8b0-t0L5b4wJylO59M6znxIn171_KN1Yofrwhxaj-XKl5eRbqQJPEyQHfcMipw1m1zTPhBW6g0KEFf6w9lZoB8HowvEHo6HnjQeu43jQerLCcXAxkBXvjf3hxJO0wU9ofS-Uuhf-0BkEQzeYuL4XjIIxtHCcyC3qffnTRfELxs9_AYUUgoM)
 
 ## Data Flow Diagram (DAGs + Pipeline)
-![DAG Architecture](assets/dag_architecture.png)
+![DAG Architecture](https://mermaid.ink/svg/pako:eNp9Vm1v2zYQ_isE82VDZccSFTtRX4CsxoYC2TokQT9sHgRaImUuFOmRVJ00zn_fkXqJ7DQFDJoU77l77vicqEdc6JLhDE8mk5UqtOKiylYKIS71rthQ48IKoY2r5RVdM2kz5EzD_FNJH3TjMsTknV-6DatZhtbUsmH5hRpB15LZzg3Xyt2Ib2AWp9v7lQphh1jo6tqb2WZdGbrdoKWgMKl_0fd_r_Dy8je0pI6iX8F8hf9pHQ62NwRsrnRBpXW0uIP1YIPQNd3BrqG73FLHpBSO5eumuGPu3dqcfuCCydKetn_Tiul_rVYj-J9GF8xaVoKTbT_PqRadk8GUqXKljogB71nc8Z_FGbKibiSwCHhudJ23cUfxlrP41kPWjZAQR5V5s5WaloGsUJwZdPn5k0VvkKMVOoK_xiHpOSQZEqpi1uWWKScUk0leQmEPCCSBQMVc7kVxtJUM3Er6YAOrWqiftpJ6f5X3xn5GTsMPDI7A_pza-AF4c3v5EVlGTbFB2zax05egGE0mH9rYw4z8OF_S50syBKoo2qKXVMiHXJVfxUEE8nq6ZJSuP7KdNneB-UG66N17ZBqVH1MnId9C19umO3IfO-CDTv0A51hTewd_fyy_fDqCpwDfGTFQh44DV_aYfVcVMtQHAg-z9EWloCH87r7UO-WVhQ61v28l2NqGabAOPFDJjPjKylNIxk69NRDvn7Vu8p1wG5_ss7-hhY593hpRVcwsaXXdqM-gAOq02beK7dkO4IAwDPiOg78aNOilD9hJZx9OSwoLL67-BAep7sfCCtMA-a9h5gEFpb4BrUpWOASVqO0r9m2dbJIbxjuWnbTDPwTqOtl3ga9jLsr30-n01HPzk-_Uq_f93Xr1btu6kR_UbUxq38qkj9ApprMTlQJcyJmCC2dfWKejXPsGE1qFfJyomQVNMNtnfpTSoMVCgvsl48gSOEgpsxPG-JzzyDqj71h2QtbnCZ9HhZbaZCczHi8S-vYAWYaXoIfyBT8bQRcFoazsoTGP43RxCHW-7zos5wsw7rH8YkHiIWxK4nR2hF3r-2coH4W9SCmQ7paTnSjdJou396-lMLrmvM_RBnRp9HyGlowx_laJQpeEkfgqjPd9g0Xh1RnGJIwkCi-LMCZhbJ-koRBvcYQrI0qccbhFWYRrZmrq1_jRe17hcKevcAbTknHaSLj6VuoJcFuq_tK6xpn_OIiw0U21Gfw0Wy_sLs3BBCTAzEfdKIezi-ABZ4_4HmeT-XwxnaXJ4oyQ8ySezUiEH3B2Pp8mcCTkPD27ILCXPEX4W4gZT9OzWTI_i-cXcUrmi_l5hFkpoDF-b79uwkfO0_-3adXl)
 
 
+### DAG Workflow Summary
+- **DAG 01** infers AOIs from field polygons, tags each field with an `aoi_id`, writes outputs under `derived/` (`aois.json`, `fields_with_aoi.geojson`), then triggers DAG 02.
+- **DAG 02** builds a daily date range from the **earliest planting date to today**, runs a STAC search per **AOI × day**, writes results under `ingest/` (`ingest/aoi_id=.../date=.../s2_refs.json`), and triggers DAG 03 **for each day**.
+- **DAG 03** filters fields by `planting_date ≤ run_day`, unions eligible fields by AOI, computes NDVI per AOI using the day’s ref, and writes outputs under `calculation/` (`calculation/aoi_timeseries/...`).
+
+
+## Sample GeoJSON Input
 ```geojson
 {
     "type": "FeatureCollection",
@@ -488,11 +512,6 @@ Local Data Lab is a containerized, local-first data platform based on Airflow an
     ]
 }
 ```
-
-### DAG Workflow Summary
-- **DAG 01** infers AOIs from field polygons, tags each field with an `aoi_id`, writes outputs under `derived/` (`aois.json`, `fields_with_aoi.geojson`), then triggers DAG 02.
-- **DAG 02** builds a daily date range from the **earliest planting date to today**, runs a STAC search per **AOI × day**, writes results under `ingest/` (`ingest/aoi_id=.../date=.../s2_refs.json`), and triggers DAG 03 **for each day**.
-- **DAG 03** filters fields by `planting_date ≤ run_day`, unions eligible fields by AOI, computes NDVI per AOI using the day’s ref, and writes outputs under `calculation/` (`calculation/aoi_timeseries/...`).
 
 ## System Requirements
 - macOS, Linux, or Windows (with WSL2) capable of running Docker
