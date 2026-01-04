@@ -40,7 +40,6 @@
   - Install: https://docs.docker.com/get-docker/
   - Must allow privileged containers and bind-mounting the repo directory
 - `VS Code` with the `Dev Containers extension`
-    - The repo is not designed to run without DevContainers
 - `Git`
 - Network access to pull images and features from Docker Hub/GHCR and Terraform providers
 - A local `.env` file at repo root
