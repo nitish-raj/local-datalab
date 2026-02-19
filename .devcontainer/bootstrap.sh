@@ -39,6 +39,33 @@ if [[ -n "${TF_PLUGIN_CACHE_DIR:-}" ]]; then
   mkdir -p "${TF_PLUGIN_CACHE_DIR}"
 fi
 
+read_airflow_version() {
+    local requirements_file="${REPO_DIR}/requirements/base.in"
+    local airflow_version
+
+    airflow_version="$(python3 - "${requirements_file}" <<'PY'
+from pathlib import Path
+import sys
+
+requirements_path = Path(sys.argv[1])
+for raw_line in requirements_path.read_text().splitlines():
+    line = raw_line.strip()
+    if line.startswith("apache-airflow=="):
+        print(line.split("==", 1)[1])
+        break
+else:
+    raise SystemExit("apache-airflow==<version> not found in requirements/base.in")
+PY
+)"
+
+    if [[ -z "${airflow_version}" ]]; then
+        echo "[bootstrap] ERROR: Unable to resolve Airflow version from requirements/base.in"
+        exit 1
+    fi
+
+    echo "${airflow_version}"
+}
+
 terraform_init_with_retry() {
     local dir="$1"
     local max_attempts="${2:-3}"
@@ -127,8 +154,14 @@ kubectl get nodes
 
 echo "[bootstrap] Building Airflow image in minikube docker"
 if command -v docker >/dev/null 2>&1; then
+  AIRFLOW_VERSION="$(read_airflow_version)"
+  echo "[bootstrap] Using Airflow version ${AIRFLOW_VERSION} from requirements/base.in"
   eval "$(minikube -p "${KUBE_CONTEXT}" docker-env)"
-  docker build -t local/airflow:dev -f "${REPO_DIR}/airflow/Dockerfile" "${REPO_DIR}"
+  docker build \
+    --build-arg "AIRFLOW_VERSION=${AIRFLOW_VERSION}" \
+    -t local/airflow:dev \
+    -f "${REPO_DIR}/airflow/Dockerfile" \
+    "${REPO_DIR}"
 else
   echo "[bootstrap] WARNING: docker not found on PATH; skipping Airflow image build"
 fi
