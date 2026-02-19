@@ -23,7 +23,7 @@
 
 	"forwardPorts": [8080],
 
-	"postCreateCommand": "bash .devcontainer/bootstrap.sh",
+	"postCreateCommand": "bash .devcontainer/bootstrap.sh && pre-commit install --install-hooks",
 	"postStartCommand": "bash .devcontainer/poststart.sh",
 
 	"customizations": {
