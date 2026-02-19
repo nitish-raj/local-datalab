@@ -66,7 +66,7 @@ def infer_aois_and_tag_fields(
 
     clusters = sorted(set(fields_gdf_m["cluster"].tolist()))  # Final cluster ids
     # Map clusters to AOI ids
-    cluster_to_aoi = {c: f"AOI_{i+1:02d}" for i, c in enumerate(clusters)}
+    cluster_to_aoi = {c: f"AOI_{i + 1:02d}" for i, c in enumerate(clusters)}
 
     aois = []
     for c in clusters:

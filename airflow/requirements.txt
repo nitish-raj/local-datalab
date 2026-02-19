@@ -1,10 +1,1 @@
-pandas
-numpy
-boto3
-rasterio
-planetary-computer
-geopandas
-pystac-client
-stackstac
-scikit-learn
-apache-airflow-providers-amazon
+-r ../requirements/base.txt

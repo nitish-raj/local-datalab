@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:3.11-bookworm
+FROM mcr.microsoft.com/devcontainers/python:3.13-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -13,7 +13,6 @@ RUN apt-get update && \
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY .devcontainer/requirements.txt /tmp/requirements.txt
-RUN uv pip install --system --upgrade pip
-RUN uv pip install --system --no-cache-dir -r /tmp/requirements.txt && \
-    rm /tmp/requirements.txt
+COPY requirements/dev.txt /tmp/requirements-dev.txt
+RUN uv pip install --system --no-cache-dir -r /tmp/requirements-dev.txt && \
+    rm -f /tmp/requirements-dev.txt

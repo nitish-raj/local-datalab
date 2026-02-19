@@ -4,7 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   	},
-	
+
 	"runArgs": ["--privileged","--env-file", "${localWorkspaceFolder}/.env"],
 
 	"features": {
@@ -15,14 +15,14 @@
 		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
 		"ghcr.io/devcontainers/features/terraform:1": {}
 	},
-	
+
 	"containerEnv": {
 		"TF_REGISTRY_CLIENT_TIMEOUT": "120",
 		"TF_PLUGIN_CACHE_DIR": "/home/vscode/.cache/terraform/plugin-cache"
 	},
- 	
+
 	"forwardPorts": [8080],
- 
+
 	"postCreateCommand": "bash .devcontainer/bootstrap.sh",
 	"postStartCommand": "bash .devcontainer/poststart.sh",
 
