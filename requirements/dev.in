@@ -1,0 +1,7 @@
+-r base.in
+pytest==9.0.2
+pytest-mock
+awscli
+black
+ruff
+pre-commit

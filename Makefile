@@ -58,3 +58,24 @@ test-dags:
 .PHONY: test-plugins
 test-plugins:
 	python -m pytest airflow/tests/test_plugins/ -v
+
+.PHONY: lock-requirements
+lock-requirements:
+	uv pip compile requirements/base.in --no-deps --upgrade -o requirements/base.txt
+	uv pip compile requirements/dev.in --no-deps --upgrade -o requirements/dev.txt
+
+.PHONY: lint
+lint:
+	ruff check airflow
+
+.PHONY: format
+format:
+	ruff format airflow
+
+.PHONY: precommit-install
+precommit-install:
+	pre-commit install
+
+.PHONY: precommit-run
+precommit-run:
+	pre-commit run --all-files

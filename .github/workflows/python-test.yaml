@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           cache: 'pip'
       - name: Install uv
         run: |
@@ -23,12 +23,13 @@ jobs:
           pip install uv
       - name: Install Airflow and test dependencies
         run: |
-          uv pip install --system apache-airflow pytest
-          uv pip install --system -r airflow/requirements.txt
+          uv pip install --system -r requirements/dev.txt
+      - name: Run lint checks
+        run: |
+          ruff check airflow
       - name: Run Airflow DAG tests
         run: |
           python -m pytest airflow/tests/test_dags/ -v
       - name: Run Airflow plugin tests
         run: |
           python -m pytest airflow/tests/test_plugins/ -v
-    

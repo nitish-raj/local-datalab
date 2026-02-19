@@ -65,7 +65,7 @@ terraform_init_with_retry() {
 detect_system_resources() {
     local os_type
     os_type="$(uname -s)"
-    
+
     # Detect available CPUs
     if [[ "$os_type" == "Darwin" ]]; then
         AVAILABLE_CPUS="$(sysctl -n hw.ncpu)"
@@ -74,7 +74,7 @@ detect_system_resources() {
     else
         AVAILABLE_CPUS=2
     fi
-    
+
     # Detect available memory in MB
     if [[ "$os_type" == "Darwin" ]]; then
         TOTAL_MEM_BYTES="$(sysctl -n hw.memsize)"
@@ -85,7 +85,7 @@ detect_system_resources() {
     else
         AVAILABLE_MEM_MB=4096
     fi
-    
+
     # Detect available disk space in GB (check minikube default location)
     if [[ "$os_type" == "Darwin" ]]; then
         MINIKUBE_HOME="${HOME}/.minikube"
@@ -96,17 +96,17 @@ detect_system_resources() {
     else
         AVAILABLE_DISK_GB=30
     fi
-    
+
     # Calculate minikube resources (use 100% of available)
     MINIKUBE_CPUS=$AVAILABLE_CPUS
     [[ $MINIKUBE_CPUS -lt 2 ]] && MINIKUBE_CPUS=2
-    
+
     MINIKUBE_MEMORY=$AVAILABLE_MEM_MB
     [[ $MINIKUBE_MEMORY -lt 2048 ]] && MINIKUBE_MEMORY=2048
-    
+
     MINIKUBE_DISK="${AVAILABLE_DISK_GB%.0}"
     [[ $MINIKUBE_DISK -lt 10 ]] && MINIKUBE_DISK=10
-    
+
     echo "[bootstrap] System resources detected:"
     echo "  CPUs: ${AVAILABLE_CPUS} (allocating ${MINIKUBE_CPUS})"
     echo "  Memory: ${AVAILABLE_MEM_MB}MB (allocating ${MINIKUBE_MEMORY}MB)"

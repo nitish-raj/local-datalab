@@ -1,0 +1,11 @@
+apache-airflow==3.1.5
+pandas>=2,<3
+numpy
+boto3
+rasterio
+planetary-computer
+geopandas
+pystac-client
+stackstac
+scikit-learn
+apache-airflow-providers-amazon

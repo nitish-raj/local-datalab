@@ -1,15 +1,1 @@
-boto3
-pytest
-pytest-mock
-pandas
-numpy
-awscli
-rasterio
-planetary-computer
-geopandas
-pystac-client
-stackstac
-scikit-learn
-apache-airflow-providers-amazon
-black
-ruff
+-r ../requirements/dev.txt

@@ -35,7 +35,7 @@ def rasterize_geom_mask(data_stack: xr.DataArray, geom4326) -> xr.DataArray:
         float(x_coords[0]), float(y_coords[0]), abs(x_res), abs(y_res)
     )
 
-    # Rasterize polygon to a pixel mask because NDVI is raster; mask keeps only AOI pixels.
+    # Rasterize polygon to a pixel mask so only AOI pixels are used for NDVI.
     mask = rasterize(
         [geom4326],
         out_shape=(y_coords.size, x_coords.size),
@@ -180,7 +180,10 @@ def calculate_daily_ndvi():
 
         work = []
         for aoi_id, group in eligible.groupby("aoi_id"):
-            out_key = f"{calc_prefix.rstrip('/')}/aoi_timeseries/date={day}/aoi_id={aoi_id}/ndvi.json"
+            out_key = (
+                f"{calc_prefix.rstrip('/')}/aoi_timeseries/"
+                f"date={day}/aoi_id={aoi_id}/ndvi.json"
+            )
             if s3_object_exists(processed_bucket, out_key):
                 continue
             refs_key = _refs_key(ingest_prefix, day, aoi_id)
