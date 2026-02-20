@@ -2,6 +2,11 @@
 
 ## Project Structure & Module Organization
 - `airflow/dags/`: Airflow DAG definitions (example pipelines and executor tests).
+- `airflow/dags/domain/`: Pipeline contracts and S3 key builders.
+  - `models.py`: Typed payload contracts for DAG handoffs and artifacts.
+  - `paths.py`: Canonical key/prefix builders.
+- `airflow/dags/services/`: Domain/business logic extracted from DAG files.
+- `airflow/dags/repositories/`: Artifact persistence/idempotency wrappers over low-level S3 utils.
 - `airflow/plugins/`: Airflow plugins and shared operators/hooks.
 - `requirements/`: Dependency source and lock files.
   - `requirements/base.in` and `requirements/dev.in`: Human-maintained inputs.
@@ -35,8 +40,19 @@
 
 ## Testing Guidelines
 - Frameworks: `pytest` and `pytest-mock` (installed via `requirements/dev.txt`; see `.github/workflows/python-test.yaml`).
-- Placement: add tests under `airflow/tests/test_dags/` and `airflow/tests/test_plugins/` using `test_*.py`.
+- Placement:
+  - `airflow/tests/test_dags/`: DAG import/parse and DAG-specific behavior tests.
+  - `airflow/tests/test_plugins/`: low-level utility/plugin tests.
+  - `airflow/tests/test_domain/`: model/path contract tests.
+  - `airflow/tests/test_services/`: service-layer unit tests.
+  - `airflow/tests/test_repositories/`: repository serialization/idempotency tests.
 - Scope: new DAGs and plugins should include at least a basic import/parse test.
+
+## Architecture Responsibilities
+- DAG modules should focus on orchestration (task order, mapping, triggering).
+- Service modules should own compute/business logic.
+- Repository modules should own storage access, content types, and idempotency checks.
+- Domain modules should own data shape and key conventions.
 
 ## Dependency Management
 - Edit `requirements/base.in` and `requirements/dev.in`; do not hand-edit `requirements/base.txt` or `requirements/dev.txt`.

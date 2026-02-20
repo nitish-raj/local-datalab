@@ -64,3 +64,42 @@
 
 ## Data Flow Diagram (DAGs + Pipeline)
 ![DAG Architecture](https://mermaid.ink/svg/pako:eNp9Vm1v2zYQ_isE82VDZccSFTtRX4CsxoYC2TokQT9sHgRaImUuFOmRVJ00zn_fkXqJ7DQFDJoU77l77vicqEdc6JLhDE8mk5UqtOKiylYKIS71rthQ48IKoY2r5RVdM2kz5EzD_FNJH3TjMsTknV-6DatZhtbUsmH5hRpB15LZzg3Xyt2Ib2AWp9v7lQphh1jo6tqb2WZdGbrdoKWgMKl_0fd_r_Dy8je0pI6iX8F8hf9pHQ62NwRsrnRBpXW0uIP1YIPQNd3BrqG73FLHpBSO5eumuGPu3dqcfuCCydKetn_Tiul_rVYj-J9GF8xaVoKTbT_PqRadk8GUqXKljogB71nc8Z_FGbKibiSwCHhudJ23cUfxlrP41kPWjZAQR5V5s5WaloGsUJwZdPn5k0VvkKMVOoK_xiHpOSQZEqpi1uWWKScUk0leQmEPCCSBQMVc7kVxtJUM3Er6YAOrWqiftpJ6f5X3xn5GTsMPDI7A_pza-AF4c3v5EVlGTbFB2zax05egGE0mH9rYw4z8OF_S50syBKoo2qKXVMiHXJVfxUEE8nq6ZJSuP7KdNneB-UG66N17ZBqVH1MnId9C19umO3IfO-CDTv0A51hTewd_fyy_fDqCpwDfGTFQh44DV_aYfVcVMtQHAg-z9EWloCH87r7UO-WVhQ61v28l2NqGabAOPFDJjPjKylNIxk69NRDvn7Vu8p1wG5_ss7-hhY593hpRVcwsaXXdqM-gAOq02beK7dkO4IAwDPiOg78aNOilD9hJZx9OSwoLL67-BAep7sfCCtMA-a9h5gEFpb4BrUpWOASVqO0r9m2dbJIbxjuWnbTDPwTqOtl3ga9jLsr30-n01HPzk-_Uq_f93Xr1btu6kR_UbUxq38qkj9ApprMTlQJcyJmCC2dfWKejXPsGE1qFfJyomQVNMNtnfpTSoMVCgvsl48gSOEgpsxPG-JzzyDqj71h2QtbnCZ9HhZbaZCczHi8S-vYAWYaXoIfyBT8bQRcFoazsoTGP43RxCHW-7zos5wsw7rH8YkHiIWxK4nR2hF3r-2coH4W9SCmQ7paTnSjdJou396-lMLrmvM_RBnRp9HyGlowx_laJQpeEkfgqjPd9g0Xh1RnGJIwkCi-LMCZhbJ-koRBvcYQrI0qccbhFWYRrZmrq1_jRe17hcKevcAbTknHaSLj6VuoJcFuq_tK6xpn_OIiw0U21Gfw0Wy_sLs3BBCTAzEfdKIezi-ABZ4_4HmeT-XwxnaXJ4oyQ8ySezUiEH3B2Pp8mcCTkPD27ILCXPEX4W4gZT9OzWTI_i-cXcUrmi_l5hFkpoDF-b79uwkfO0_-3adXl)
+
+## Pipeline Code Architecture
+
+The pipeline code follows a separation of concerns to keep Airflow files small and behavior-focused.
+
+- **DAG modules (`airflow/dags/0*_*.py`)**
+  - Define what runs, when it runs, and task dependencies.
+  - Keep task bodies as orchestration glue.
+
+- **Domain modules (`airflow/dags/domain/`)**
+  - `models.py`: typed contracts (`PipelineConf`, `Aoi`, `IngestRef`, `NdviResult`, `AoiWorkItem`).
+  - `paths.py`: central S3 key builders. Key formats are defined once and reused everywhere.
+
+- **Service modules (`airflow/dags/services/`)**
+  - `aoi_service.py`: AOI inference and field tagging.
+  - `stac_service.py`: STAC search and ingest reference selection.
+  - `ndvi_service.py`: NDVI computation from ingest references.
+  - `planning_service.py`: deterministic day planning for ingest idempotency.
+
+- **Repository modules (`airflow/dags/repositories/`)**
+  - `artifact_repo.py`: high-level read/write/exists wrappers over S3 utilities.
+  - Owns serialization boundaries and idempotency checks for artifacts.
+
+## How To Add a New Pipeline Step
+
+1. Define or reuse data contracts in `airflow/dags/domain/models.py`.
+2. Add key/path builders in `airflow/dags/domain/paths.py` for any new artifact layout.
+3. Implement business logic in a `airflow/dags/services/*.py` module.
+4. Add repository methods in `airflow/dags/repositories/artifact_repo.py` for new artifacts.
+5. Wire the DAG task to call service + repository code (avoid inline storage/domain logic).
+6. Add focused tests under:
+   - `airflow/tests/test_domain/`
+   - `airflow/tests/test_services/`
+   - `airflow/tests/test_repositories/`
+7. Run validation commands:
+   - `python -m pytest airflow/tests/test_domain -v`
+   - `python -m pytest airflow/tests/test_services -v`
+   - `python -m pytest airflow/tests/test_repositories -v`
+   - `python -m pytest airflow/tests/test_dags -v`
