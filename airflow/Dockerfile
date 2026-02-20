@@ -1,4 +1,4 @@
-ARG AIRFLOW_VERSION
+ARG AIRFLOW_VERSION=3.1.6
 FROM apache/airflow:${AIRFLOW_VERSION}
 
 COPY requirements/base.txt /tmp/requirements-base.txt

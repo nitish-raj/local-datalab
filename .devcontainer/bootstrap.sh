@@ -8,32 +8,43 @@ REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 K8_TF_DIR="${REPO_DIR}/infra/terraform/k8"
 AWS_TF_DIR="${REPO_DIR}/infra/terraform/aws"
 
-echo "[bootstrap] Wiring VS Code Kubernetes extension tools (kubectl, helm, minikube)"
-TOOLS_ROOT="/home/vscode/.local/state/vs-kubernetes/tools"
+echo "[bootstrap] Wiring Kubernetes CLI tool links"
+TOOLS_ROOT="${K8S_TOOLS_ROOT:-${HOME}/.local/state/vs-kubernetes/tools}"
 
-# symlink helm and minikube: ../tools/linux-amd64/<tool>
-for tool in helm minikube; do
-  if command -v "${tool}" >/dev/null 2>&1; then
-    BIN_PATH="$(command -v "${tool}")"
-    TOOL_DIR="${TOOLS_ROOT}/${tool}/linux-amd64"
-    mkdir -p "${TOOL_DIR}"
-    ln -sf "${BIN_PATH}" "${TOOL_DIR}/${tool}"
-    echo "[bootstrap] Linked ${tool} (${BIN_PATH}) -> ${TOOL_DIR}/${tool}"
-  else
-    echo "[bootstrap] WARNING: ${tool} not found on PATH; skipping wiring"
+if ! mkdir -p "${TOOLS_ROOT}"; then
+  echo "[bootstrap] ERROR: Unable to create ${TOOLS_ROOT}."
+  echo "[bootstrap] Fix home directory permissions, then rebuild the container."
+  exit 1
+fi
+
+missing_tools=0
+for tool in kubectl helm minikube; do
+  if ! command -v "${tool}" >/dev/null 2>&1; then
+    echo "[bootstrap] ERROR: ${tool} not found on PATH"
+    missing_tools=1
   fi
 done
 
-#  symlink kubectl: ../tools/kubectl/kubectl
-if command -v kubectl >/dev/null 2>&1; then
-  KUBECTL_BIN="$(command -v kubectl)"
-  KUBECTL_DIR="${TOOLS_ROOT}/kubectl"
-  mkdir -p "${KUBECTL_DIR}"
-  ln -sf "${KUBECTL_BIN}" "${KUBECTL_DIR}/kubectl"
-  echo "[bootstrap] Linked kubectl (${KUBECTL_BIN}) -> ${KUBECTL_DIR}/kubectl"
-else
-  echo "[bootstrap] WARNING: kubectl not found on PATH; skipping wiring"
+if [[ "${missing_tools}" -ne 0 ]]; then
+  echo "[bootstrap] ERROR: Required Kubernetes tools are missing; cannot continue."
+  exit 1
 fi
+
+# symlink helm and minikube: ../tools/linux-amd64/<tool>
+for tool in helm minikube; do
+  BIN_PATH="$(command -v "${tool}")"
+  TOOL_DIR="${TOOLS_ROOT}/${tool}/linux-amd64"
+  mkdir -p "${TOOL_DIR}"
+  ln -sf "${BIN_PATH}" "${TOOL_DIR}/${tool}"
+  echo "[bootstrap] Linked ${tool} (${BIN_PATH}) -> ${TOOL_DIR}/${tool}"
+done
+
+# symlink kubectl: ../tools/kubectl/kubectl
+KUBECTL_BIN="$(command -v kubectl)"
+KUBECTL_DIR="${TOOLS_ROOT}/kubectl"
+mkdir -p "${KUBECTL_DIR}"
+ln -sf "${KUBECTL_BIN}" "${KUBECTL_DIR}/kubectl"
+echo "[bootstrap] Linked kubectl (${KUBECTL_BIN}) -> ${KUBECTL_DIR}/kubectl"
 
 if [[ -n "${TF_PLUGIN_CACHE_DIR:-}" ]]; then
   mkdir -p "${TF_PLUGIN_CACHE_DIR}"

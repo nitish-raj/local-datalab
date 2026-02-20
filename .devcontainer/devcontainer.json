@@ -7,34 +7,31 @@
 
 	"runArgs": ["--privileged","--env-file", "${localWorkspaceFolder}/.env"],
 
+	"initializeCommand": "mkdir -p ${localEnv:HOME}/.config/opencode ${localEnv:HOME}/.local/share/opencode",
+
+	"mounts": [
+		"source=${localEnv:HOME}/.config/opencode,target=/var/opencode/config,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.local/share/opencode,target=/var/opencode/data,type=bind,consistency=cached"
+	],
+
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {},
 		"ghcr.io/devcontainers/features/git:1": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+			"minikube": "1.34.0"
+		},
 		"ghcr.io/devcontainers/features/terraform:1": {}
 	},
 
 	"containerEnv": {
 		"TF_REGISTRY_CLIENT_TIMEOUT": "120",
-		"TF_PLUGIN_CACHE_DIR": "/home/vscode/.cache/terraform/plugin-cache"
+		"TF_PLUGIN_CACHE_DIR": "/tmp/terraform/plugin-cache"
 	},
 
 	"forwardPorts": [8080],
 
-	"postCreateCommand": "bash .devcontainer/bootstrap.sh && pre-commit install --install-hooks",
-	"postStartCommand": "bash .devcontainer/poststart.sh",
-
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"ms-azuretools.vscode-docker",
-				"ms-kubernetes-tools.vscode-kubernetes-tools",
-				"redhat.vscode-yaml",
-				"ms-python.python",
-				"amazonwebservices.aws-toolkit-vscode"
-			]
-		}
-	}
+	"postCreateCommand": "bash .devcontainer/link-opencode-paths.sh && bash .devcontainer/bootstrap.sh && pre-commit install --install-hooks",
+	"postStartCommand": "bash .devcontainer/poststart.sh"
 }
