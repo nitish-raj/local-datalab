@@ -11,7 +11,6 @@ from rasterio.transform import from_origin
 
 from domain.models import IngestRef, NdviResult
 
-
 DEFAULT_STAC_URL = "https://planetarycomputer.microsoft.com/api/stac/v1"
 
 

@@ -76,8 +76,7 @@ def _ensure_table(connection: psycopg.Connection, schema: str) -> None:
     create_schema = sql.SQL("CREATE SCHEMA IF NOT EXISTS {};").format(
         sql.Identifier(schema)
     )
-    create_table = sql.SQL(
-        """
+    create_table = sql.SQL("""
         CREATE TABLE IF NOT EXISTS {}.raw_ndvi_observations (
             aoi_id TEXT NOT NULL,
             observation_date DATE NOT NULL,
@@ -90,8 +89,7 @@ def _ensure_table(connection: psycopg.Connection, schema: str) -> None:
             loaded_at TIMESTAMPTZ NOT NULL,
             PRIMARY KEY (aoi_id, observation_date)
         );
-        """
-    ).format(sql.Identifier(schema))
+        """).format(sql.Identifier(schema))
     with connection.cursor() as cursor:
         cursor.execute(create_schema)
         cursor.execute(create_table)
@@ -105,8 +103,7 @@ def _upsert_rows(
     if not rows:
         return 0
 
-    statement = sql.SQL(
-        """
+    statement = sql.SQL("""
         INSERT INTO {}.raw_ndvi_observations (
             aoi_id,
             observation_date,
@@ -138,8 +135,7 @@ def _upsert_rows(
             source_bucket = EXCLUDED.source_bucket,
             source_key = EXCLUDED.source_key,
             loaded_at = EXCLUDED.loaded_at;
-        """
-    ).format(sql.Identifier(schema))
+        """).format(sql.Identifier(schema))
 
     with connection.cursor() as cursor:
         cursor.executemany(statement, rows)

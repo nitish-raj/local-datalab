@@ -7,7 +7,6 @@ from pathlib import Path
 import geopandas as gpd
 from shapely.geometry import Point
 
-
 REPO_DIR = Path(__file__).resolve().parents[2]
 DAGS_DIR = REPO_DIR / "orchestrator" / "dags"
 SRC_DIR = REPO_DIR / "src"
