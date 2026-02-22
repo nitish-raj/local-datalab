@@ -14,11 +14,11 @@ RUN apt-get update && \
     echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends nodejs && \
-    npm install -g opencode-ai && \
+    npm install -g opencode-ai @openai/codex && \
     DEV_HOME="$(getent passwd 1000 | cut -d: -f6 || true)" && \
     if [ -n "${DEV_HOME}" ]; then \
-      mkdir -p "${DEV_HOME}/.config/opencode" "${DEV_HOME}/.local/share/opencode" "${DEV_HOME}/.local/state" && \
-      chown -R 1000:1000 "${DEV_HOME}/.config" "${DEV_HOME}/.local"; \
+      mkdir -p "${DEV_HOME}/.config/opencode" "${DEV_HOME}/.local/share/opencode" "${DEV_HOME}/.local/state" "${DEV_HOME}/.codex" && \
+      chown -R 1000:1000 "${DEV_HOME}/.config" "${DEV_HOME}/.local" "${DEV_HOME}/.codex"; \
     fi && \
     rm -rf /var/lib/apt/lists/*
 

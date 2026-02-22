@@ -7,11 +7,12 @@
 
 	"runArgs": ["--privileged","--env-file", "${localWorkspaceFolder}/.env"],
 
-	"initializeCommand": "mkdir -p ${localEnv:HOME}/.config/opencode ${localEnv:HOME}/.local/share/opencode",
+	"initializeCommand": "mkdir -p ${localEnv:HOME}/.config/opencode ${localEnv:HOME}/.local/share/opencode ${localEnv:HOME}/.codex",
 
 	"mounts": [
 		"source=${localEnv:HOME}/.config/opencode,target=/var/opencode/config,type=bind,consistency=cached",
-		"source=${localEnv:HOME}/.local/share/opencode,target=/var/opencode/data,type=bind,consistency=cached"
+		"source=${localEnv:HOME}/.local/share/opencode,target=/var/opencode/data,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.codex,target=/var/codex/home,type=bind,consistency=cached"
 	],
 
 	"features": {
