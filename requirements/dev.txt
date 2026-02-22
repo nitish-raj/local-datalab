@@ -6,7 +6,7 @@ apache-airflow-providers-amazon==9.21.0
     # via -r requirements/base.in
 awscli==1.44.44
     # via -r requirements/dev.in
-black==26.1.0
+black==25.11.0
     # via -r requirements/dev.in
 boto3==1.42.54
     # via -r requirements/base.in

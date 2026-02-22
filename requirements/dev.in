@@ -2,8 +2,8 @@
 pytest==9.0.2
 pytest-mock
 awscli
-black
+black==25.11.0
 ruff
 pre-commit
-dbt-core
-dbt-postgres
+dbt-core==1.10.19
+dbt-postgres==1.10.0

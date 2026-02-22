@@ -1,9 +1,15 @@
+KUBE_CONTEXT ?= local-datalab
+
 .PHONY: kube-info
 kube-info:
 	kubectl config use-context $(KUBE_CONTEXT)
 	kubectl get ns
 	kubectl get pods -A
 	kubectl get cronjob -A
+
+.PHONY: minikube-dashboard
+minikube-dashboard:
+	minikube dashboard -p $(KUBE_CONTEXT) --url
 
 .PHONY: list-s3-buckets
 list-s3-buckets:
@@ -33,7 +39,7 @@ sync-dags:
 		--exclude "*" --include "*.py" --delete
 	aws --endpoint-url=$(AWS_ENDPOINT_URL) s3 sync \
 		./src s3://$(AIRFLOW_DAGS_BUCKET)/dags \
-		--exclude "*" --include "*.py" --delete
+		--exclude "*" --include "*.py"
 
 .PHONY: sync-raw-data
 sync-raw-data:

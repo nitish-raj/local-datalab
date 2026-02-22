@@ -6,9 +6,8 @@ import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
-
-import psycopg
-from psycopg import sql
+import psycopg2 as psycopg
+from psycopg2 import sql
 
 from domain.paths import ndvi_day_prefix
 from utils.s3_utils import _s3_local, get_s3_object
@@ -166,7 +165,6 @@ def sync_ndvi_from_s3_to_postgres(
         dbname=postgres_config.dbname,
         user=postgres_config.user,
         password=postgres_config.password,
-        autocommit=False,
     ) as connection:
         _ensure_table(connection, postgres_config.schema)
         inserted_rows = _upsert_rows(connection, postgres_config.schema, rows)

@@ -25,12 +25,12 @@ ensure_minikube_running() {
         return 0
     fi
 
-    if minikube status -p "${KUBE_CONTEXT}" >/dev/null 2>&1; then
-        return 0
+    if ! minikube status -p "${KUBE_CONTEXT}" >/dev/null 2>&1; then
+        echo "[$(date)] Starting minikube profile ${KUBE_CONTEXT}..." >> "${AIRFLOW_LOG}"
+        minikube start -p "${KUBE_CONTEXT}" >> "${AIRFLOW_LOG}" 2>&1
     fi
 
-    echo "[$(date)] Starting minikube profile ${KUBE_CONTEXT}..." >> "${AIRFLOW_LOG}"
-    minikube start -p "${KUBE_CONTEXT}" >> "${AIRFLOW_LOG}" 2>&1
+    minikube -p "${KUBE_CONTEXT}" addons enable metrics-server >> "${AIRFLOW_LOG}" 2>&1
 }
 
 set_kube_context() {

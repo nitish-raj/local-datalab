@@ -36,7 +36,7 @@ fi
 
 "${AWS_BIN}" --endpoint-url="${AWS_ENDPOINT_URL}" s3 sync \
   ./src "s3://${AIRFLOW_DAGS_BUCKET}/dags" \
-  --exclude "*" --include "*.py" --delete
+  --exclude "*" --include "*.py"
 
 "${AWS_BIN}" --endpoint-url="${AWS_ENDPOINT_URL}" s3 sync \
   ./orchestrator/data "s3://${RAW_SATELLITE_BUCKET}" --delete
