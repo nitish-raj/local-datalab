@@ -171,7 +171,7 @@ if command -v docker >/dev/null 2>&1; then
   docker build \
     --build-arg "AIRFLOW_VERSION=${AIRFLOW_VERSION}" \
     -t local/airflow:dev \
-    -f "${REPO_DIR}/airflow/Dockerfile" \
+    -f "${REPO_DIR}/orchestrator/Dockerfile" \
     "${REPO_DIR}"
 else
   echo "[bootstrap] WARNING: docker not found on PATH; skipping Airflow image build"
@@ -195,7 +195,10 @@ terraform apply -auto-approve
 sleep 10
 nohup kubectl port-forward svc/airflow-api-server 8080:8080 -n airflow >/tmp/airflow-port-forward.log 2>&1 &
 disown %1 2>/dev/null || true
+nohup kubectl port-forward svc/analytics-postgres 5432:5432 -n data-lab >/tmp/analytics-db-port-forward.log 2>&1 &
+disown %2 2>/dev/null || true
 echo "[bootstrap] Airflow webserver available at http://localhost:8080"
+echo "[bootstrap] Analytics Postgres available at localhost:5432"
 
 echo "[bootstrap] Ensuring cron DAG sync job is installed"
 SYNC_SCRIPT="${REPO_DIR}/.devcontainer/sync-local-to-s3.sh"

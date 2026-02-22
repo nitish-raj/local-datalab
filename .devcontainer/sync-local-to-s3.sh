@@ -31,8 +31,12 @@ if ! command -v "${AWS_BIN}" >/dev/null 2>&1; then
 fi
 
 "${AWS_BIN}" --endpoint-url="${AWS_ENDPOINT_URL}" s3 sync \
-  ./airflow/dags "s3://${AIRFLOW_DAGS_BUCKET}/dags" \
+  ./orchestrator/dags "s3://${AIRFLOW_DAGS_BUCKET}/dags" \
   --exclude "*" --include "*.py" --delete
 
 "${AWS_BIN}" --endpoint-url="${AWS_ENDPOINT_URL}" s3 sync \
-  ./airflow/data "s3://${RAW_SATELLITE_BUCKET}" --delete
+  ./src "s3://${AIRFLOW_DAGS_BUCKET}/dags" \
+  --exclude "*" --include "*.py" --delete
+
+"${AWS_BIN}" --endpoint-url="${AWS_ENDPOINT_URL}" s3 sync \
+  ./orchestrator/data "s3://${RAW_SATELLITE_BUCKET}" --delete

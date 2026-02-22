@@ -51,11 +51,12 @@
 3. The container build will run `.devcontainer/bootstrap.sh` on first start; it provisions Minikube, applies Terraform, and starts port forwards. This may take 10-20 minutes depending on system resources and network speed.
 4. After the container starts, access services:
    - Airflow UI: http://localhost:8080 (default user: `admin`, password: `admin`)
-       - Trigger first DAG with prefix `01_`, it will auto trigger subsequesnt DAGs `02_` and `03_`
+       - Trigger first DAG with prefix `01_`, it will auto trigger subsequent DAGs `02_`, `03_`, and `04_`
    - Localstack: It does not have a UI, but you can interact with it using AWS CLI or SDKs at `http://localhost:4566`. For example, list S3 buckets with:
       ```
       aws --endpoint-url=http://localhost:4566 s3 ls
       ```
+   - Analytics Postgres: available locally at `localhost:5432`
    - Minikube Dashboard: Run `minikube dashboard -p local-datalab --url` in the container terminal to get the URL.
 
 
@@ -67,39 +68,55 @@
 
 ## Pipeline Code Architecture
 
-The pipeline code follows a separation of concerns to keep Airflow files small and behavior-focused.
+The pipeline code follows a production-friendly structure that separates orchestration,
+business logic, storage boundaries, and SQL transformations.
 
-- **DAG modules (`airflow/dags/0*_*.py`)**
-  - Define what runs, when it runs, and task dependencies.
-  - Keep task bodies as orchestration glue.
+- **Orchestration (`orchestrator/dags/`)**
+  - DAG files contain scheduling, dependency wiring, and cross-DAG triggers.
+  - Task internals delegate to package modules under `src/`.
 
-- **Domain modules (`airflow/dags/domain/`)**
-  - `models.py`: typed contracts (`PipelineConf`, `Aoi`, `IngestRef`, `NdviResult`, `AoiWorkItem`).
-  - `paths.py`: central S3 key builders. Key formats are defined once and reused everywhere.
+- **Python package (`src/`)**
+  - `domain/`: typed contracts and canonical S3 path builders.
+  - `services/`: AOI inference, STAC ingestion planning/search, NDVI compute logic.
+  - `repositories/`: storage/idempotency boundaries for S3 artifacts.
+  - `loaders/`: S3-to-Postgres raw loading jobs.
 
-- **Service modules (`airflow/dags/services/`)**
-  - `aoi_service.py`: AOI inference and field tagging.
-  - `stac_service.py`: STAC search and ingest reference selection.
-  - `ndvi_service.py`: NDVI computation from ingest references.
-  - `planning_service.py`: deterministic day planning for ingest idempotency.
+- **Transformation layer (`transform/`)**
+  - dbt models transform `raw.raw_ndvi_observations` into staging/marts schemas in Postgres.
 
-- **Repository modules (`airflow/dags/repositories/`)**
-  - `artifact_repo.py`: high-level read/write/exists wrappers over S3 utilities.
-  - Owns serialization boundaries and idempotency checks for artifacts.
+- **Infrastructure (`infra/`)**
+  - Terraform resources for LocalStack, Airflow, and analytics Postgres in one place.
 
 ## How To Add a New Pipeline Step
 
-1. Define or reuse data contracts in `airflow/dags/domain/models.py`.
-2. Add key/path builders in `airflow/dags/domain/paths.py` for any new artifact layout.
-3. Implement business logic in a `airflow/dags/services/*.py` module.
-4. Add repository methods in `airflow/dags/repositories/artifact_repo.py` for new artifacts.
-5. Wire the DAG task to call service + repository code (avoid inline storage/domain logic).
+1. Define or reuse data contracts in `src/domain/models.py`.
+2. Add key/path builders in `src/domain/paths.py` for any new artifact layout.
+3. Implement business logic in a `src/services/*.py` module.
+4. Add repository methods in `src/repositories/artifact_repo.py` for new artifacts.
+5. Wire the DAG task in `orchestrator/dags/` to call service + repository code (avoid inline storage/domain logic).
 6. Add focused tests under:
-   - `airflow/tests/test_domain/`
-   - `airflow/tests/test_services/`
-   - `airflow/tests/test_repositories/`
+   - `tests/test_domain/`
+   - `tests/test_services/`
+   - `tests/test_repositories/`
 7. Run validation commands:
-   - `python -m pytest airflow/tests/test_domain -v`
-   - `python -m pytest airflow/tests/test_services -v`
-   - `python -m pytest airflow/tests/test_repositories -v`
-   - `python -m pytest airflow/tests/test_dags -v`
+   - `PYTHONPATH=src python -m pytest tests/test_domain -v`
+   - `PYTHONPATH=src python -m pytest tests/test_services -v`
+   - `PYTHONPATH=src python -m pytest tests/test_repositories -v`
+   - `PYTHONPATH=src python -m pytest tests/test_dags -v`
+
+## DBT Workflow
+
+1. Ensure port forwards are running (`make port-forward`), including Postgres on `localhost:5432`.
+2. Sync NDVI artifacts from S3 into Postgres raw table:
+
+   ```bash
+   make sync-ndvi-postgres
+   ```
+
+3. Run dbt models and tests:
+
+   ```bash
+   make dbt-debug
+   make dbt-run
+   make dbt-test
+   ```

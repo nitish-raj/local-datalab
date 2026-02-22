@@ -20,6 +20,12 @@ env:
     value: "aws_default"
   - name: AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION
     value: "false"
+  - name: ANALYTICS_DB_HOST
+    value: "${analytics_db_host}"
+  - name: ANALYTICS_DB_PORT
+    value: "${analytics_db_port}"
+  - name: ANALYTICS_DB_SCHEMA
+    value: "raw"
   - name: AIRFLOW_CONN_AWS_DEFAULT
     value: |
       {
@@ -39,6 +45,15 @@ secret:
   - envName: AWS_SECRET_ACCESS_KEY
     secretName: ${aws_credentials_secret_name}
     secretKey: AWS_SECRET_ACCESS_KEY
+  - envName: ANALYTICS_DB_NAME
+    secretName: ${analytics_db_secret_name}
+    secretKey: ANALYTICS_DB_NAME
+  - envName: ANALYTICS_DB_USER
+    secretName: ${analytics_db_secret_name}
+    secretKey: ANALYTICS_DB_USER
+  - envName: ANALYTICS_DB_PASSWORD
+    secretName: ${analytics_db_secret_name}
+    secretKey: ANALYTICS_DB_PASSWORD
 
 executor: KubernetesExecutor
 

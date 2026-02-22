@@ -30,7 +30,7 @@
 		"TF_PLUGIN_CACHE_DIR": "/tmp/terraform/plugin-cache"
 	},
 
-	"forwardPorts": [8080],
+	"forwardPorts": [8080, 4566, 5432],
 
 	"postCreateCommand": "bash .devcontainer/link-opencode-paths.sh && bash .devcontainer/bootstrap.sh && pre-commit install --install-hooks",
 	"postStartCommand": "bash .devcontainer/poststart.sh"

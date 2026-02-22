@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: raw_ndvi_observations
+        columns:
+          - name: aoi_id
+            tests:
+              - not_null
+          - name: observation_date
+            tests:
+              - not_null
+          - name: status
+            tests:
+              - not_null

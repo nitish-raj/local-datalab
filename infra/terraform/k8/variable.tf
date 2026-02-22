@@ -37,3 +37,15 @@ variable "airflow_dags_bucket" {
 variable "airflow_logs_bucket" {
   type = string
 }
+
+variable "analytics_db_name" {
+  type = string
+}
+
+variable "analytics_db_user" {
+  type = string
+}
+
+variable "analytics_db_password" {
+  type = string
+}

@@ -5,3 +5,5 @@ awscli
 black
 ruff
 pre-commit
+dbt-core
+dbt-postgres

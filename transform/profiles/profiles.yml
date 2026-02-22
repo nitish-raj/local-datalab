@@ -1,0 +1,14 @@
+local_datalab:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('ANALYTICS_DB_HOST', '127.0.0.1') }}"
+      port: "{{ env_var('ANALYTICS_DB_PORT', '5432') | int }}"
+      user: "{{ env_var('ANALYTICS_DB_USER', 'analytics') }}"
+      password: "{{ env_var('ANALYTICS_DB_PASSWORD', 'analytics') }}"
+      dbname: "{{ env_var('ANALYTICS_DB_NAME', 'analytics') }}"
+      schema: analytics
+      threads: 4
+      keepalives_idle: 0
+      connect_timeout: 10

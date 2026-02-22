@@ -1,17 +1,18 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `airflow/dags/`: Airflow DAG definitions (example pipelines and executor tests).
-- `airflow/dags/domain/`: Pipeline contracts and S3 key builders.
-  - `models.py`: Typed payload contracts for DAG handoffs and artifacts.
-  - `paths.py`: Canonical key/prefix builders.
-- `airflow/dags/services/`: Domain/business logic extracted from DAG files.
-- `airflow/dags/repositories/`: Artifact persistence/idempotency wrappers over low-level S3 utils.
-- `airflow/plugins/`: Airflow plugins and shared operators/hooks.
+- `orchestrator/dags/`: Airflow DAG definitions (orchestration-only modules).
+- `src/`: Pipeline code for shared logic.
+  - `domain/`: Typed payload contracts and S3 key builders.
+  - `services/`: Domain/business logic extracted from DAG files.
+  - `repositories/`: Artifact persistence/idempotency wrappers over low-level S3 utils.
+  - `loaders/`: Cross-system loaders (e.g., S3 to Postgres raw ingestion).
+- `tests/`: Unit/integration tests for dags, domain, services, repositories, plugins, and loaders.
+- `transform/`: dbt project for SQL transformations in analytics Postgres.
 - `requirements/`: Dependency source and lock files.
   - `requirements/base.in` and `requirements/dev.in`: Human-maintained inputs.
   - `requirements/base.txt` and `requirements/dev.txt`: `uv pip compile`-generated pinned lock files.
-- `airflow/requirements.txt`: Airflow runtime wrapper (`-r ../requirements/base.txt`).
+- `orchestrator/requirements.txt`: Airflow runtime wrapper (`-r ../requirements/base.txt`).
 - `.devcontainer/requirements.txt`: Devcontainer/test wrapper (`-r ../requirements/dev.txt`).
 - `infra/`: Infrastructure configuration.
   - `infra/terraform/aws/` and `infra/terraform/k8/`: Terraform for AWS/localstack and Kubernetes.
@@ -20,8 +21,8 @@
 
 ## Build, Test, and Development Commands
 - `make kube-info`: Switch to the `local-datalab` context and list namespaces/pods/cronjobs.
-- `make port-forward` or `make port-forward-manager`: Forward Airflow API and Localstack ports.
-- `make sync-dags`: Sync `./airflow` to the Localstack S3 DAGs bucket.
+- `make port-forward` or `make port-forward-manager`: Forward Airflow API, Localstack, and analytics Postgres ports.
+- `make sync-dags`: Sync DAG files and `src` package modules to the Localstack S3 DAGs bucket.
 - `make list-dags`: Inspect the Localstack S3 DAGs bucket.
 - `bash .devcontainer/bootstrap.sh`: Provision Minikube, apply Terraform, and start port-forwards.
 - `terraform fmt -check` / `terraform validate`: Run in `infra/terraform/aws` and `infra/terraform/k8`.
@@ -29,10 +30,12 @@
 - `make lint`: Run Ruff lint checks for Python code.
 - `make format`: Run Ruff formatter for Python code.
 - `make precommit-install` and `make precommit-run`: Install and run pre-commit hooks.
-- `python -m pytest airflow/tests/test_dags/ -v` and `python -m pytest airflow/tests/test_plugins/ -v`: Run DAG and plugin tests.
+- `make sync-ndvi-postgres`: Load NDVI artifacts from S3 into Postgres raw table.
+- `make dbt-debug`, `make dbt-run`, `make dbt-test`: Run dbt for warehouse transformations.
+- `PYTHONPATH=src python -m pytest tests/test_dags/ -v` and `PYTHONPATH=src python -m pytest tests/test_plugins/ -v`: Run DAG and plugin tests.
 
 ## Coding Style & Naming Conventions
-- Python: 4-space indentation; keep DAG IDs and task IDs in snake_case (see `airflow/dags/*.py`).
+- Python: 4-space indentation; keep DAG IDs and task IDs in snake_case (see `orchestrator/dags/*.py`).
 - Use Ruff for linting/formatting, configured in `pyproject.toml`.
 - Run pre-commit hooks before opening a PR (`.pre-commit-config.yaml`).
 - Terraform: 2-space indentation; run `terraform fmt` before committing.
@@ -41,11 +44,12 @@
 ## Testing Guidelines
 - Frameworks: `pytest` and `pytest-mock` (installed via `requirements/dev.txt`; see `.github/workflows/python-test.yaml`).
 - Placement:
-  - `airflow/tests/test_dags/`: DAG import/parse and DAG-specific behavior tests.
-  - `airflow/tests/test_plugins/`: low-level utility/plugin tests.
-  - `airflow/tests/test_domain/`: model/path contract tests.
-  - `airflow/tests/test_services/`: service-layer unit tests.
-  - `airflow/tests/test_repositories/`: repository serialization/idempotency tests.
+  - `tests/test_dags/`: DAG import/parse and DAG-specific behavior tests.
+  - `tests/test_plugins/`: low-level utility/plugin tests.
+  - `tests/test_domain/`: model/path contract tests.
+  - `tests/test_services/`: service-layer unit tests.
+  - `tests/test_repositories/`: repository serialization/idempotency tests.
+  - `tests/test_loaders/`: cross-system loader tests (S3 to Postgres).
 - Scope: new DAGs and plugins should include at least a basic import/parse test.
 
 ## Architecture Responsibilities

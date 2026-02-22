@@ -9,3 +9,4 @@ pystac-client
 stackstac
 scikit-learn
 apache-airflow-providers-amazon
+psycopg-binary

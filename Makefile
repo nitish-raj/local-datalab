@@ -13,23 +13,32 @@ list-s3-buckets:
 port-forward:
 	nohup kubectl port-forward svc/airflow-api-server 8080:8080 -n airflow >/tmp/airflow-port-forward.log 2>&1 &
 	nohup kubectl port-forward svc/localstack 4566:4566 -n data-lab >/tmp/localstack-port-forward.log 2>&1 &
+	nohup kubectl port-forward svc/analytics-postgres 5432:5432 -n data-lab >/tmp/analytics-db-port-forward.log 2>&1 &
 	disown %1 2>/dev/null || true
 	disown %2 2>/dev/null || true
+	disown %3 2>/dev/null || true
 
 .PHONY: poststart
 poststart:
 	bash .devcontainer/poststart.sh
 
+.PHONY: port-forward-manager
+port-forward-manager:
+	bash .devcontainer/poststart.sh
+
 .PHONY: sync-dags
 sync-dags:
 	aws --endpoint-url=$(AWS_ENDPOINT_URL) s3 sync \
-		./airflow/dags s3://$(AIRFLOW_DAGS_BUCKET)/dags \
+		./orchestrator/dags s3://$(AIRFLOW_DAGS_BUCKET)/dags \
+		--exclude "*" --include "*.py" --delete
+	aws --endpoint-url=$(AWS_ENDPOINT_URL) s3 sync \
+		./src s3://$(AIRFLOW_DAGS_BUCKET)/dags \
 		--exclude "*" --include "*.py" --delete
 
 .PHONY: sync-raw-data
 sync-raw-data:
 	aws --endpoint-url=$(AWS_ENDPOINT_URL) s3 sync \
-		./airflow/data s3://$(RAW_SATELLITE_BUCKET) --delete
+		./orchestrator/data s3://$(RAW_SATELLITE_BUCKET) --delete
 
 .PHONY: list-dags
 list-dags:
@@ -53,11 +62,15 @@ show-dag-log:
 
 .PHONY: test-dags
 test-dags:
-	python -m pytest airflow/tests/test_dags/ -v
+	PYTHONPATH=src python -m pytest tests/test_dags/ -v
 
 .PHONY: test-plugins
 test-plugins:
-	python -m pytest airflow/tests/test_plugins/ -v
+	PYTHONPATH=src python -m pytest tests/test_plugins/ -v
+
+.PHONY: test-loaders
+test-loaders:
+	PYTHONPATH=src python -m pytest tests/test_loaders/ -v
 
 .PHONY: lock-requirements
 lock-requirements:
@@ -66,11 +79,11 @@ lock-requirements:
 
 .PHONY: lint
 lint:
-	ruff check airflow
+	ruff check orchestrator src tests
 
 .PHONY: format
 format:
-	ruff format airflow
+	ruff format orchestrator src tests
 
 .PHONY: precommit-install
 precommit-install:
@@ -79,3 +92,19 @@ precommit-install:
 .PHONY: precommit-run
 precommit-run:
 	pre-commit run --all-files
+
+.PHONY: dbt-debug
+dbt-debug:
+	DBT_PROFILES_DIR=transform/profiles dbt --project-dir transform debug
+
+.PHONY: dbt-run
+dbt-run:
+	DBT_PROFILES_DIR=transform/profiles dbt --project-dir transform run
+
+.PHONY: dbt-test
+dbt-test:
+	DBT_PROFILES_DIR=transform/profiles dbt --project-dir transform test
+
+.PHONY: sync-ndvi-postgres
+sync-ndvi-postgres:
+	PYTHONPATH=src python -m loaders.s3_to_postgres
