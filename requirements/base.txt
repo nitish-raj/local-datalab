@@ -10,7 +10,7 @@ aiohttp==3.13.5
     # via apache-airflow-providers-http
 aiosignal==1.4.0
     # via aiohttp
-aiosmtplib==5.1.0
+aiosmtplib==5.1.1
     # via apache-airflow-providers-smtp
 aiosqlite==0.21.0
     # via apache-airflow-core
@@ -27,7 +27,7 @@ anyio==4.13.0
     #   httpx
     #   starlette
     #   watchfiles
-apache-airflow==3.2.0
+apache-airflow==3.2.2
     # via
     #   -r base.in
     #   apache-airflow-providers-amazon
@@ -37,7 +37,7 @@ apache-airflow==3.2.0
     #   apache-airflow-providers-http
     #   apache-airflow-providers-smtp
     #   apache-airflow-providers-standard
-apache-airflow-core==3.2.0
+apache-airflow-core==3.2.2
     # via
     #   apache-airflow
     #   apache-airflow-task-sdk
@@ -64,7 +64,7 @@ apache-airflow-providers-smtp==2.4.4
     # via apache-airflow-core
 apache-airflow-providers-standard==1.12.2
     # via apache-airflow-core
-apache-airflow-task-sdk==1.2.0
+apache-airflow-task-sdk==1.2.2
     # via
     #   apache-airflow
     #   apache-airflow-core
@@ -111,6 +111,8 @@ botocore==1.42.87
     #   redshift-connector
     #   s3transfer
     #   sagemaker-studio
+cachetools==7.1.4
+    # via apache-airflow-core
 cadwyn==6.2.0
     # via apache-airflow-core
 certifi==2026.2.25
@@ -526,7 +528,7 @@ sqlparse==0.5.5
     # via apache-airflow-providers-common-sql
 stackstac==0.5.1
     # via -r base.in
-starlette==0.52.1
+starlette==1.3.1
     # via
     #   apache-airflow-core
     #   cadwyn
