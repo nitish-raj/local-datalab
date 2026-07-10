@@ -10,7 +10,7 @@ aiohttp==3.13.5
     # via apache-airflow-providers-http
 aiosignal==1.4.0
     # via aiohttp
-aiosmtplib==5.1.0
+aiosmtplib==5.1.1
     # via apache-airflow-providers-smtp
 aiosqlite==0.21.0
     # via apache-airflow-core
