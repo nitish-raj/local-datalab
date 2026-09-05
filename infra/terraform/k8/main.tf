@@ -150,7 +150,7 @@ resource "helm_release" "airflow" {
   repository      = "https://airflow.apache.org"
   chart           = "airflow"
   namespace       = kubernetes_namespace_v1.airflow.metadata[0].name
-  version         = "1.18.0"
+  version         = "1.22.0"
   cleanup_on_fail = true
   timeout         = 1800
   max_history     = 1
