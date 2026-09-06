@@ -27,7 +27,7 @@ anyio==4.13.0
     #   httpx
     #   starlette
     #   watchfiles
-apache-airflow==3.2.0
+apache-airflow==3.2.1rc1
     # via
     #   -r base.in
     #   apache-airflow-providers-amazon
@@ -37,7 +37,7 @@ apache-airflow==3.2.0
     #   apache-airflow-providers-http
     #   apache-airflow-providers-smtp
     #   apache-airflow-providers-standard
-apache-airflow-core==3.2.0
+apache-airflow-core==3.2.1rc1
     # via
     #   apache-airflow
     #   apache-airflow-task-sdk
@@ -64,7 +64,7 @@ apache-airflow-providers-smtp==2.4.4
     # via apache-airflow-core
 apache-airflow-providers-standard==1.12.2
     # via apache-airflow-core
-apache-airflow-task-sdk==1.2.0
+apache-airflow-task-sdk==1.2.1rc1
     # via
     #   apache-airflow
     #   apache-airflow-core
@@ -462,7 +462,7 @@ pystac-client==0.9.0
     # via
     #   -r base.in
     #   planetary-computer
-pytest==9.0.2
+pytest==9.0.3
     # via
     #   -r dev.in
     #   pytest-mock
@@ -489,7 +489,7 @@ python-dotenv==1.2.2
     #   planetary-computer
     #   pydantic-settings
     #   uvicorn
-python-multipart==0.0.26
+python-multipart==0.0.27
     # via fastapi
 python-slugify==8.0.4
     # via apache-airflow-core
